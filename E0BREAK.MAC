@@ -1,0 +1,18 @@
+
+;
+;	E0break.mac - time safe break check
+;
+
+PPI	equ	0F780h
+
+; Initialize break checking
+init_brk_check	macro
+		MVI	A,0FEH
+		STA	PPI
+		endm
+
+; Check for break key pressed (Z=1)
+check_break	macro
+		LDA	PPI+1
+		ANI	40h
+		endm
