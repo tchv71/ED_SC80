@@ -1125,7 +1125,9 @@ PRCH0:	STA	SYM
 	CALL	INSSYM
 PRC00:	CALL	?OUT
 	CZ	INSSYM
+	push	h
 	CALL	wprawo
+	pop	h
 	LDA	SYM
 	MOV	M,A
 	RET
