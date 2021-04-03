@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="ED_SC80" Version="11000" InternalType="">
   <VirtualDirectory Name="ED_SC80">
+    <File Name="HEADER.ASM"/>
     <File Name="RK86.MAC"/>
     <File Name="E0DISP.ASM"/>
     <File Name="Makefile"/>

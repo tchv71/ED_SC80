@@ -5,18 +5,18 @@
 ;****************************************************
 
 TabStep		equ	8
-LimitedCharSet	equ	1
+;LimitedCharSet	equ	1
 
-ScrXOffset	equ	0
+ScrXOffset	equ	8
 ScrYOffset	equ	3
-ScrWidth	equ	80
-ScrHeight	equ	24
+ScrWidth	equ	78
+ScrHeight	equ	25
 
-LogicWidth	equ	80
+LogicWidth	equ	64
 LogicHeight	equ	ScrHeight-2
 
 ScrSize		equ	(ScrHeight+ScrYOffset+2)*ScrWidth
-ScrStart	equ	0f000h-ScrSize
+ScrStart	equ	76D0h;0f000h-ScrSize
 
 ; Start address of physical screen
 VRAM		equ	ScrStart+ScrYOffset*ScrWidth+ScrXOffset

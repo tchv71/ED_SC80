@@ -3,7 +3,7 @@
 ;	E0break.mac - time safe break check
 ;
 
-PPI	equ	0F780h
+;PPI	equ	0F780h
 
 ; Initialize break checking
 init_brk_check	macro

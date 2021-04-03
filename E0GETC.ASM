@@ -2,7 +2,8 @@
 ;	E0GETC.ASM -	ED SC80  get symbol module (OS dependent)
 ;			RK version (hardware dependent)
 
-PPI	EQU	0F780H
+PPI	EQU	8000h
+;include	RK86.MAC
 
 ; Return SYMBOL and SHIFT/CNTRL flags
 ; 	40h - CNTRL  &  80h - SHIFT
@@ -38,7 +39,8 @@ GETCHR::
 	PUSH	H
 	PUSH	D
 	PUSH	B
-	CALL	GTC
+	;CALL	GTC
+	CALL	0F803h
 	POP	B
 	POP	D
 	POP	H
