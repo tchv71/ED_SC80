@@ -1,7 +1,7 @@
 # ED_SC80
-CP/M hardware dependent SC80 text editor for RK86 60K
+Hardware dependent SC80 text editor for RK86 32K
 
-This editor can read/write CP/M text files but uses RK86 60k direct text screen access - therefore more fast than using standard console i/o
+This editor uses RK86 direct text screen access - therefore more fast than using standard console i/o
 
 Text blocks and 2 text windows are supported
 

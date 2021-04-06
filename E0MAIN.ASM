@@ -10,12 +10,16 @@
 ;	14-Jan-1992 -  Use some CP/M features
 ;	28-Jan-1992 -  Change command table presentation
 ;	01-Mar-1992 -  Delete some bugs
-;	15-Mar-1992 -  Add case insensitive search
+;	15-Mar-1992 -  Add case unsencetive search
+
+;	02-Apr-2021 -  Original RK back-adaptation
 
 
 PUBLIC	INFSTR
 
 .8080
+	CSEG
+	;ORG 104H
 
 StkSize	EQU	30h
 
@@ -24,6 +28,7 @@ WRK	EQU	1E00H
 
 
 include	E0DISP.MAC
+include RK86.MAC
 include	E0BREAK.MAC
 
 ;extrn	DISSTR,
@@ -38,8 +43,7 @@ DelimSym	equ	1bh
 INFSTR	EQU	VRAM+ScrWidth*(ScrHeight-1)
 MAXLEN	EQU	127
 
-
-START:	lhld	6
+START::	CALL	0F830h;lhld	6
 	sphl
 	MVI	M,0FFH
 	MVI	A,1
@@ -102,7 +106,7 @@ SETINF:	CALL	DRLIN
 
 	CALL	INFPR
 	DW	8
-	DC	'Line: '
+	DC	'LINE: '
 
 	LHLD	NUMSTR
 	CALL	?FBBCD
@@ -147,11 +151,11 @@ SETINF:	CALL	DRLIN
 
 WRMSRT:	CALL	SAVMOD
 OUT1:	CALL	DISPLY
-OUT3:	lhld	6
+OUT3:	CALL	0F830h;lhld	6
 	sphl
 	JMP	M03
 
-MAXRAM:	LHLD	6
+MAXRAM:	CALL	0F830h;LHLD	6
 	push	b
 	lxi	b,-StkSize
 	dad	b
@@ -340,6 +344,7 @@ D01:
 @12:	XCHG
 	RET
 
+;@
 
 DELAY0:	DCX	B
 	MOV	A,B
@@ -776,7 +781,7 @@ INSR1:	LDA	OLDMES
 	LDA	NEWMES
 	SUB	C
 	JZ	I04
-	MVI	B,1
+	MVI	B,0
 	JNC	$+5
 	MVI	B,-1
 	MOV	C,A
@@ -3069,8 +3074,9 @@ NOCR2:	POP	PSW
 
 
 EXIT::	call	CLS
-	rst	0
+	CALL	0F800h;rst	0
 
+;----- Display one editor string ----------
 DISSTR::	SetScrAddr
 	MVI	B,0
 	LDA	DISPOS
