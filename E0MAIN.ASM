@@ -113,7 +113,7 @@ SETINF:	CALL	DRLIN
 	XCHG
 	LXI	H,INFSTR+22
 	CALL	BPR
-	mvi	a,'-'
+	mvi	a,'/'
 	SetScrAddr
 	WriteNextSym
 	DCX	H
