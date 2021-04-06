@@ -2,10 +2,10 @@
 
 include E0DISP.MAC
 include RK86.MAC
+
 extrn CURSM
 
 SETSCR::
-	;RET
 	LXI	H,DISP+1
 	MVI	M,0
 	DCX	H
@@ -43,7 +43,6 @@ LPS:
 	ADD	M
 	POP	H
 	DCR	A
-	ADI	ScrXOffset
 	STA	DISP
 	MOV	A,H
 	ADI	2
@@ -51,7 +50,5 @@ LPS:
 	RET
 
 LPOS:	DB	0
-;RK_END
-@RK_END::
-	DW	0
+
 	end
