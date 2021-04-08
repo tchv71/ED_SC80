@@ -2,8 +2,7 @@
 ;	E0GETC.ASM -	ED SC80  get symbol module (OS dependent)
 ;			RK version (hardware dependent)
 
-PPI	EQU	8000h
-;include	RK86.MAC
+include	RK86.MAC
 
 ; Return SYMBOL and SHIFT/CNTRL flags
 ; 	40h - CNTRL  &  80h - SHIFT
@@ -15,14 +14,14 @@ GETCHC::
 	push	psw
 	ANI	3FH
 	MOV	C,A
-	LXI	H,?CTRL
+	LXI	H,@CTRL
 	LDA	PPI+2
 	ANA	M
 	MOV	A,C
 	JNZ	$+5
 	ORI	40H
 	MOV	C,A
-	LXI	H,?SHFT
+	LXI	H,@SHFT
 	LDA	PPI+2
 	ANA	M
 	MOV	A,C
@@ -107,14 +106,14 @@ RP2:	DCX	H
 	DI
  	RET
 
-; (ET1) - wektor nav. klawi{ w porqdke navatiq
-; (NREP) - nomer powtoreniq
+; (ET1) - Pressed keys vector (in order of press)
+; (NREP) - Repeat number
 GTVECT:	MVI	B,5
 GETC0:	PUSH	B
-	LDA	?RD
+	LDA	@RD
 	ORA	A
 	MVI	A,0
-	STA	?RD
+	STA	@RD
 	JNZ	$+6
 	CALL	KBDSCN
 	POP	B
@@ -205,7 +204,7 @@ GTV31:	LDA	NREP
 	STA	NREP
 	JMP	GTV21
 
-; (PRESS) - wektor nav. klawi{ w porqdke obnaruveniq
+; (PRESS) -  Pressed keys vector (in order of discover)
 KBDSCN:	LXI	B,40H
 	LXI	H,PRESS
 	LXI	D,807FH
@@ -213,7 +212,7 @@ KBDSCN:	LXI	B,40H
 	PUSH	B
 	LDA	PPI+2
 	MOV	B,A
-	LDA	?RUS
+	LDA	@RUS
 	ANA	B
 	JNZ	$+6
 	MVI	M,0FEH
@@ -284,7 +283,7 @@ MODCHR:	MOV	E,A
 	JNC	MOD3
 MOD4:	LDA	PPI+2
 	MOV	B,A
-	LDA	?CTRL
+	LDA	@CTRL
 	ANA	B
 	JZ	SCTRL
 	LDA	PPI+2
@@ -292,14 +291,14 @@ MOD4:	LDA	PPI+2
 	JNZ	SHIFT0
 	LDA	PPI+2
 	MOV	B,A
-	LDA	?SHFT
+	LDA	@SHFT
 	ANA	B
 	JZ	@SHIFT
 	RET
 
 MOD3:	LDA	PPI+2
 	MOV	B,A
-	LDA	?SHFT
+	LDA	@SHFT
 	ANA	B
 	JNZ	SH3
 	RET
@@ -313,7 +312,7 @@ SCTRL:	MOV	A,E
 
 SHIFT0:	LDA	PPI+2
 	MOV	B,A
-	LDA	?SHFT
+	LDA	@SHFT
 	ANA	B
 	JZ	SH5
 	MOV	A,E
@@ -347,10 +346,10 @@ KEYBRD:	DB	0CH,1FH,1BH,0,1,2,3,4
 	DB	'PQRSTUVWXYZ[\]^ '
 
 
-?RUS:	DB	80H
-?CTRL:	DB	40H
-?SHFT:	DB	20H
-?RD:	DB	0
+@RUS:	DB	80H
+@CTRL:	DB	?Ctrl
+@SHFT:	DB	?Shift
+@RD:	DB	0
 
 PNT:	DW	ET1
 ET1:	DB	0ffh
