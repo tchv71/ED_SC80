@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="ED_SC80" Version="11000" InternalType="">
   <VirtualDirectory Name="ED_SC80">
+    <File Name="E0FILEIO.ASM"/>
     <File Name="sc80_utf8.txt"/>
     <File Name="HEADER.ASM"/>
     <File Name="RK86.MAC"/>
@@ -104,4 +105,15 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Project Name="ED_SC80" Path="ED_SC80.project" Active="Yes"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Environment/>
+      <Project Name="ED_SC80" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Environment/>
+      <Project Name="ED_SC80" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
 </CodeLite_Project>
