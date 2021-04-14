@@ -10,7 +10,6 @@
     <File Name="E0CMDT.ASM"/>
     <File Name="E0GETC.ASM"/>
     <File Name="E0MAIN.ASM"/>
-    <File Name="EDCPM.ASM"/>
     <File Name="E0DISP.MAC"/>
     <File Name="E0BREAK.MAC"/>
   </VirtualDirectory>

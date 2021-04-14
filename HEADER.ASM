@@ -3,6 +3,6 @@
 	ORG	100h
 	DB	1
 	DB	4
-	DB	1ah
-	DB	0e7h
+	DB	18h
+	DB	0c8h
 	END
