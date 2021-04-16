@@ -1,0 +1,107 @@
+tekstowyj |krannyj redaktor SC80
+--------- -------- -------- ----
+(C) SC80 1.04.1988
+
+redaktor prednazna~en dlq obrabotki tekstow, sozdannnyh
+w redaktorah 80 i "mikron", a takve dlq sozdaniq nowyh
+tekstow. po wozmovnostqm redaktor polnostx` perekrywaet
+ED *mikron*.
+
+dlq wladelxcew |wm s dwumq znakogeneratorami razra-
+botana wersiq, pozwolq`}aq redaktirowatx teksty s pro-
+pisnymi i stro~nymi bukwami.
+
+nowye wozmovnosti :
+
+1. poisk i zamena
+
+2. blo~nye komandy
+
+3. redaktirowanie
+tekstow so strokami
+dlinoj do 128 simwolow
+
+4. zna~itelxno bolee
+wysokaq skorostx
+prosmotra teksta
+
+5. bolx{ee koli~estwo
+stro~nyh direktiw
+redaktirowaniq
+
+pere~enx komand:
+
+1). wwodqtsq nepostredstwenno
+
+$ - kursor wwerh
+$ - kursor wniz
+$ - kursor wprawo
+$ - kursor wlewo
+
+F1 - simwol ras{ireniq koda -l`boj
+     simwol pri |tom wwoditsq
+     neposredstwenno i ne interpretiruetsq
+     kak komanda
+F2 - udalenie simwola slewa ot kursora
+F3 - smena revima wstawki-zatiraniq
+F4 - udalenie simwola pod kursorom
+
+<HOME> - kursor w na~alo |krana ili
+     na posledn`` stroku |krana
+
+<tab> - tabulqciq
+<wk> - perehod na sledu}u` stro~ku
+
+2). direktiwy wmeste s <us>
+
+<us>+<wk> - razrezanie stroki
+<us>+ \ - sklejka strok
+
+<us>+ F2 - udalenie wseh simwolow slewa
+           ot kursora
+<us>+ F3 - vstawka probela pod kursorom
+<us>+ F4 - udalenie wseh simwolow sprawa
+           ot kursora
+
+<us>+ $ - perehod na stranicu wwerh
+<us>+ $ - perehod na stranicu wniz
+<us>+ $ - kursor w na~alo stroki
+<us>+ $ - kursor w konec stroki
+<us>+ L - powtorenie poiska ili zameny
+<us>+ D - udalenie stroki
+
+<us>+ Q - blo~nye komandy :
+
+$ - pometitx na~alo bloka
+$ - pometitx konec bloka
+$ - kursor w na~alo bloka
+$ - kursor w konec bloka
+
+<us>+D - udalenie bloka
+<us>+J - perenos bloka
+<us>+C - kopirowanie bloka
+<us>+W - zapisx bloka
+<us>+R - ~tenie bloka
+
+3). posle <str>
+
+<us>+ E - wyhod w monitor
+<us>+ W - zapisx fajla
+<us>+ R - ~tenie fajla
+
+$ - w na~alo teksta
+$ - w konec teksta
+S - poisk
+R - zamena
+T - sme}enie |krana po gorizontali
+
+4).
+<ss>+$ - skrolling wwerh
+<ss>+$ - skrolling wniz
+
+5). rabota s oknami
+<us>+ U - granica okon wwerh
+<us>+ K - granica okon wniz
+<us>+ W - perekl`~enie mevdu oknami
+
+awtor: cwetkow d.s., moskwa
