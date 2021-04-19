@@ -5,3 +5,5 @@ L80
 M80
 ESC80.RK
 *.SYM
+bin/ESC80_32k.rk
+*.BIN
