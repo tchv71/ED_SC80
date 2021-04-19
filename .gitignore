@@ -1,3 +1,7 @@
 .DS_Store
 *.PRN
 *.REL
+L80
+M80
+ESC80.RK
+*.SYM
