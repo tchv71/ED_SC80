@@ -10,7 +10,7 @@
 ;	14-Jan-1992 -  Use some CP/M features
 ;	28-Jan-1992 -  Change command table presentation
 ;	01-Mar-1992 -  Delete some bugs
-;	15-Mar-1992 -  Add case insensitive search
+;	15-Mar-1992 -  Add case unsencetive search
 
 ;	02-Apr-2021 -  Original RK back-adaptation
 
