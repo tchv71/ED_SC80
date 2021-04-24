@@ -20,13 +20,16 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="E0BREAK.MAC" />
 		<Unit filename="E0CMDT.ASM" />
 		<Unit filename="E0DISP.ASM" />
+		<Unit filename="E0DISP.MAC" />
 		<Unit filename="E0FILEIO.ASM" />
 		<Unit filename="E0GETC.ASM" />
 		<Unit filename="E0MAIN.ASM" />
 		<Unit filename="HEADER.ASM" />
 		<Unit filename="Makefile" />
+		<Unit filename="RK86.MAC" />
 		<Extensions>
 			<envvars />
 			<code_completion />

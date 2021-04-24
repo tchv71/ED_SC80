@@ -100,8 +100,7 @@
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="yes">
-        <RebuildCommand>make clean
-make all</RebuildCommand>
+        <RebuildCommand>make clean all</RebuildCommand>
         <CleanCommand>make clean</CleanCommand>
         <BuildCommand>make all</BuildCommand>
         <PreprocessFileCommand/>
