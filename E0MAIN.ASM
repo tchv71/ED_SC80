@@ -12,8 +12,11 @@
 ;	01-Mar-1992 -  Delete some bugs
 ;	15-Mar-1992 -  Add case insensitive search
 
+;	25-Apr-2021 -  Controller addresses table
 
-PUBLIC	INFSTR
+
+PUBLIC	INFADR
+;PUBLIC	INFSTR
 
 .8080
 
@@ -35,10 +38,23 @@ extrn   FNDCMD		; From E0CMDT.ASM
 LineSym		equ	1ch
 DelimSym	equ	1bh
 
-INFSTR	EQU	VRAM+ScrWidth*(ScrHeight-1)
+INFSTR_OFFS	EQU	ScrWidth*(ScrHeight-1)
+INFSTR	EQU	VRAM+INFSTR_OFFS
 MAXLEN	EQU	127
 
+PUBLIC	VRAM_ADR,PPI_ADR,DISP_ADR,DMA_ADR
 
+	JMP	START
+; Controller addresses table
+VRAM_ADR:	DW VRAM	; VRAM buffer start address - 76d0h
+PPI_ADR:	DW PPI 	; VV55 keyboard Controller
+PPI2_ADR:	DW PPI2	; VV55 additional PPI  - 0A000h
+DISP_ADR:	DW DISP	; VG75 Display Controller - 0C000h
+DMA_ADR:	DW DMA	; VT57 DMA Controller - 0E000h
+		DW 0,0,0,0 ; Reserved for future use
+
+START::
+; ************* Code begins here *************
 START:	lhld	6
 	sphl
 	MVI	M,0FFH
@@ -92,7 +108,8 @@ SETINF:	CALL	DRLIN
 	CALL	CURSM
 	CALL	LINE
 
-	LXI	H,INFSTR
+	;LXI	H,INFSTR
+	LHLD	INFADR
 	SetScrAddr
 	mvi	c,8
 @@000:	mvi	a,space
@@ -107,7 +124,12 @@ SETINF:	CALL	DRLIN
 	LHLD	NUMSTR
 	CALL	?FBBCD
 	XCHG
-	LXI	H,INFSTR+22
+	;LXI	H,INFSTR+22
+	LHLD	INFADR
+	PUSH	D
+	LXI	D,22
+	DAD	D
+	POP	D
 	CALL	BPR
 	mvi	a,'-'
 	SetScrAddr
@@ -125,7 +147,12 @@ SETINF:	CALL	DRLIN
 	DC	'     TEXT:'
 	LHLD	werhgr
 	XCHG
-	LXI	H,INFSTR+57
+	;LXI	H,INFSTR+57
+	LHLD	INFADR
+	PUSH	D
+	LXI	D,57
+	DAD	D
+	POP	D
 	SetScrAddr
 	mvi	a,'H'
 	WriteNextSym
@@ -135,7 +162,12 @@ SETINF:	CALL	DRLIN
 	call	INFPR
 	dw	51
 	dc	'H-'
-	lxi	h,infstr+50
+	;lxi	h,infstr+50
+	LHLD	INFADR
+	PUSH	D
+	LXI	D,50
+	DAD	D
+	POP	D
 	XCHG
 	LHLD	nivgr
 	XCHG
@@ -173,13 +205,16 @@ ClsLoop:
 	jnz	ClsLoop
 	RET
 
-INIT:	LXI	H,VRAM
+INIT:	;LXI	H,VRAM
+	LHLD	VRAM_ADR
 	SHLD	SCRBEG
 	MVI	A,LogicHeight
 	STA	YSIZE
 	XRA	A
 	STA	YBEG
-	LXI	H,INFSTR
+	LHLD	VRAM_ADR
+	LXI	D,INFSTR_OFFS
+	DAD	D
 	SHLD	INFADR
 	RET
 
@@ -226,7 +261,11 @@ DISCUR:	LDA	CURX
 	MVI	H,0
 	CALL	?FBBCD
 	XCHG
-	LXI	H,INFSTR+35
+	LHLD	INFADR
+	PUSH	D
+	LXI	D,35
+	DAD	D
+	POP	D
 	MOV	A,E
 	CALL	BPR1
 	MOV	A,D
@@ -1329,7 +1368,8 @@ WINUP::	LDA	SCRBG0+1
 	STA	YBEG0
 	MVI	A,YMIN
 	STA	YSIZE0
-	LXI	H,INFSTR
+	;LXI	H,INFSTR
+	LHLD	INFADR
 	SHLD	INFAD0
 	LXI	B,-3*ScrWidth
 	DAD	B
@@ -1380,13 +1420,17 @@ WINDN::	LDA	SCRBG0+1
 	STA	?WIN1
 	MVI	A,YMAX
 	STA	YSIZE
-	LXI	H,VRAM
+	;LXI	H,VRAM
+	LHLD	VRAM_ADR
 	SHLD	SCRBG0
 	MVI	A,YMIN
 	STA	YSIZE0
 	INR	A
 	STA	YBEG
-	LXI	H,VRAM+3*ScrWidth
+	;LXI	H,VRAM+3*ScrWidth
+	LHLD	VRAM_ADR
+	LXI	D, 3*ScrWidth
+	DAD	DE
 	SHLD	INFAD0
 	SHLD	SCRBEG
 	LXI	H,INFSTR
@@ -1527,8 +1571,12 @@ Edit_Line:
 	STA	CURX
 	MVI	A,ScrHeight
 	STA	CURY
-	LXI	h,INFSTR+kraj-1
-
+	;LXI	h,INFSTR+kraj-1
+	LHLD	INFADR
+	PUSH	D
+	LXI	D,kraj-1
+	DAD	D
+	POP	D
 move_curs:
 	call	CURM
 Get_key:
@@ -1589,11 +1637,14 @@ IN4:	LHLD	STRADR
 
 
 LINE:	push	b
-	LXI	H,INFSTR-ScrWidth
-		SetScrAddr
+	;LXI	H,INFSTR-ScrWidth
+	LHLD	INFADR
+	LXI	B,-ScrWidth
+	DAD	B
+	SetScrAddr
 	MVI	c,LogicWidth
 CLR1:	mvi	a,LineSym
-		WriteNextSym
+	WriteNextSym
 	dcr	c
 	JNZ	CLR1
 	pop	b
@@ -1604,7 +1655,8 @@ CLRSTR:	PUSH	H
 	push	b
 	CALL	LINE
 	MVI	A,80
-	lxi	h,INFSTR
+	;lxi	h,INFSTR
+	LHLD	INFADR
         SetScrAddr
 	mvi	c,LogicWidth
 CLR0:	mvi	a,space
@@ -1643,7 +1695,10 @@ RPREP0:	CALL	MARK
 	JMP	RPREP1
 
 REPREP:	PUSH	H
-	LXI	H,INFSTR+3
+	;LXI	H,INFSTR+3
+	LHLD	INFADR
+	LXI	B,3
+	DAD	B
 	MVI	A,11
 	MVI	M,0
 	DCR	A
@@ -2027,7 +2082,12 @@ MODSC0:	CALL	GETCHR
 	SUI	30H-7
 	STA	LPOS
 	SUI	6
-	LXI	H,0E7B9H-0E7C2H+VRAM
+	;LXI	H,0E7B9H-0E7C2H+VRAM
+	LHLD	VRAM_ADR
+	PUSH	D
+	LXI	H,0E7B9H-0E7C2H
+	DAD	D
+	POP	D
 	DCR	A
 	DCX	H
 	JNZ	$-2
@@ -2503,7 +2563,8 @@ INFPR:	POP	H
 	MOV	D,M
 	INX	H
  	PUSH	H
-	LXI	H,INFSTR
+	;LXI	H,INFSTR
+	LHLD	INFADR
 	DAD	D
 	XCHG
 	POP	H
@@ -2546,12 +2607,22 @@ CALC0:	CALL	INFPR
 	CALL	COMPUTE
 	PUSH	H
 	XCHG
-	LXI	H,INFSTR+36
+	;LXI	H,INFSTR+36
+	LHLD	INFADR
+	PUSH	B
+	LXI	B,36
+	DAD	B
+	POP	B
 	CALL	BPR
 	POP	H
 	CALL	?FBBCD
 	XCHG
-	LXI	H,INFSTR+43
+	;LXI	H,INFSTR+43
+	LHLD	INFADR
+	PUSH	B
+	LXI	B,43
+	DAD	B
+	POP	B
 	CALL	BPR
 	JMP	CALC0
 
@@ -2757,7 +2828,7 @@ EXIT::	call	CLS
 DISSTR::	SetScrAddr
 	MVI	B,0
 	LDA	DISPOS
-	MOV	C,A
+	MOV	C,A  
 	call	_SkipSyms
 	MVI	C,LogicWidth
 	push	h
@@ -2872,7 +2943,6 @@ OLDMES	EQU	WRK+25
 NEWMES	EQU	WRK+26
 MODE	EQU	WRK+27
 RMODE	EQU	WRK+28	; 1
-
 
 SCRADR	EQU	WRK+32
 STRADR	EQU	WRK+34

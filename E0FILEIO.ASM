@@ -1,11 +1,10 @@
 ;********************************************************
-;*  SC80 text screen editor       File I/O module  CP/M *
+;*  SC80 text screen editor       File I/O module  Tape *
 ;*                        (c) TCHV,1989-93              *
 ;********************************************************
 
-EXTRN	PRINT,INFSTR,nivgr,werhgr,START,CURX,INFPR,BLBEG,BLEND
-EXTRN	JMPBL,OUT1,CLRSTR,FILNAM,NAMMES,INPSTR,GETCHR,MAXRAM,MARK,DISADR,CDEHL
-FCB	EQU	5CH
+EXTRN	nivgr,werhgr,START,CURX,BLBEG,BLEND
+EXTRN	JMPBL,OUT1, MARK,DISADR
 
 RDFIL::	CALL	DISHDL
 	JNZ	RDF0

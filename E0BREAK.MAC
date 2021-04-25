@@ -7,12 +7,21 @@ PPI	equ	0F780h
 
 ; Initialize break checking
 init_brk_check	macro
-		MVI	A,0FEH
-		STA	PPI
+		PUSH	H
+		;MVI	A,0FEH
+		;STA	PPI
+		LHLD	PPI_ADR
+		MVI	M,0FEH
+		POP	H
 		endm
 
 ; Check for break key pressed (Z=1)
 check_break	macro
-		LDA	PPI+1
+		;LDA	PPI+1
+		PUSH	H
+		LHLD	PPI_ADR
+		INR	L
+		MOV	A,M
+		POP	H
 		ANI	40h
 		endm
