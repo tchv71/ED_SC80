@@ -6,7 +6,7 @@
     </Plugin>
   </Plugins>
   <VirtualDirectory Name="ED_SC80">
-    <File Name="ESC80.ASM"/>
+    <File Name="sc80_koi7.txt"/>
     <File Name="E0FILEIO.ASM"/>
     <File Name="sc80_utf8.txt"/>
     <File Name="HEADER.ASM"/>

@@ -5,6 +5,6 @@
 	ORG	100h
 	DB	1
 	DB	4
-	DB	18h
-	DB	0cbh
+	DB	19h
+	DB	57h
 	END
