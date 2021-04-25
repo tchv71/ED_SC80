@@ -6,5 +6,5 @@
 	DB	1
 	DB	4
 	DB	19h
-	DB	4Eh
+	DB	57h
 	END

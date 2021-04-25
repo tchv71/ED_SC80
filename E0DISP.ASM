@@ -3,7 +3,7 @@
 include E0DISP.MAC
 ;include RK86.MAC
 extrn CURSM
-EXTRN	DISP_ADR, DMA_ADR
+EXTRN	DISP_ADR, DMA_ADR, VRAM_ADR
 
 SETSCR::
 	;RET
@@ -37,8 +37,15 @@ SETSCR::
 	DCR	L
 	DCR	L
 	DCR	L
-	MVI	M,Low(ScrStart)
-	MVI	M,High(ScrStart)
+	PUSH	B
+	XCHG
+	LHLD	VRAM_ADR
+	LXI	B,ScrStart-VRAM
+	DAD	B
+	XCHG
+	MOV	M,E
+	MOV	M,D
+	POP	D
 	INX	H
 	MVI	M,Low(ScrSize-1)
 	MVI	M,High(ScrSize-1) or 40h
