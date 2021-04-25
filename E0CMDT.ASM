@@ -7,7 +7,7 @@ INCLUDE E0DISP.MAC
 
 PUBLIC	FNDCMD
 
-EXTRN INFSTR
+EXTRN INFADR
 
 @Left		equ	8h
 @Right		equ	18h
@@ -100,7 +100,9 @@ FirstSym:
 
 	push	h
 	MOV	C,A
-	lxi	h,INFSTR+1
+	;lxi	h,INFSTR+1
+	LHLD	INFADR
+	INX	H
 	SetScrAddr
 	MVI	A,'^'
 	WriteNextSym

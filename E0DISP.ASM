@@ -1,12 +1,16 @@
 ;----- Display one editor string ----------
 
 include E0DISP.MAC
-include RK86.MAC
+;include RK86.MAC
 extrn CURSM
+EXTRN	DISP_ADR, DMA_ADR
 
 SETSCR::
 	;RET
-	LXI	H,DISP+1
+
+	;LXI	H,DISP+1
+	LHLD	DISP_ADR
+	INX	H
 	MVI	M,0
 	DCX	H
 	MVI	M,ScrWidth-1
@@ -19,23 +23,39 @@ SETSCR::
 	MOV	A,M
 	ANI	20H
 	JZ	$-3
-	LXI	H,DMA+8
+
+	;LXI	H,DMA+8
+	LHLD	DMA_ADR
+	PUSH	B
+	LXI	B,8
+	DAD	B
+	POP	B
 	MVI	M,80H
-	MVI	L,Low(DMA+4)
+	PUSH	H ; DMA+8
+	;MVI	L,Low(DMA+4)
+	DCR	L
+	DCR	L
+	DCR	L
+	DCR	L
 	MVI	M,Low(ScrStart)
 	MVI	M,High(ScrStart)
 	INX	H
 	MVI	M,Low(ScrSize-1)
 	MVI	M,High(ScrSize-1) or 40h
-	MVI	L,Low(DMA+8)
+	;MVI	L,Low(DMA+8)
+	POP	H ; DMA+8
 	MVI	M,0A4H
 	RET
 	
 SetCursor::
 	MVI	A,80H
-	STA	DISP+1
-	MOV     A,L
-LPS:
+	;STA	DISP+1
+	XCHG
+	LHLD	DISP_ADR
+	INX	H
+	MOV	M,A
+	DCX	H
+	MOV     A,E
 	PUSH	H
 	LXI	H,LPOS
 	ADD	M
@@ -44,10 +64,12 @@ LPS:
 	POP	H
 	DCR	A
 	ADI	ScrXOffset
-	STA	DISP
-	MOV	A,H
+	;STA	DISP
+	MOV	M,A
+	MOV	A,D
 	ADI	2
-	STA	DISP
+	;STA	DISP
+	MOV	M,A
 	RET
 
 LPOS:	DB	0
