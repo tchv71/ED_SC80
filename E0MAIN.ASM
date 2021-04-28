@@ -1028,14 +1028,17 @@ SETC:	PUSH	PSW
 M03:	CALL	SETINF
 	CALL	SETRST
 
-RED:	CALL	DISCUR
+RED::	CALL	DISCUR
 	CALL	GETCHC
 
 	MOV	A,B
-	ANI	40H
+	ANI	40H ; Ctrl flag
 	JNZ	ANDR
 
-	MOV	A,C
+	MOV	A,C ; All control symbols are less than 20h except for Backspace - 7Fh
+	CPI	7fH
+	jz	ANDR
+	
 	CPI	20H
 	JNC	PRCHR
 

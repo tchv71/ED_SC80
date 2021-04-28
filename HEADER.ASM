@@ -6,5 +6,5 @@
 	DB	1
 	DB	4
 	DB	19h
-	DB	57h
+	DB	5Ch
 	END

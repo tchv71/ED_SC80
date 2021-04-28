@@ -29,6 +29,9 @@ extrn	Adr2
 
 	dseg
 ; *** Editor command table ***
+; DW CMD_ADDR
+; DB First Command sym, should be ANDed with 40h or ORed with 40h if Ctrl assumed pressed
+; DB Second command sym or 0
 CMDTBL::
 	CMD	LFTM,	@Left,		RHTM,	@Right
 	CMD	UPM,	@Up,		DWNM,	@Down
@@ -37,7 +40,7 @@ CMDTBL::
 	DW	0
 
 	CMD	INSCTRL,0
-	CMD	LDEL,	1,		RDEL,	3
+	CMD	LDEL,	3Fh,		RDEL,	3
 	CMD	TAB,	9,		BSC,	12
 	CMD	CR,	13,		REST,	27
 	CMD	DELLT,	Cntrl+1,	DELRT,	Cntrl+3
