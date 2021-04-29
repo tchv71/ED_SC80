@@ -16,11 +16,4 @@
 	sta	addr
 	ENDM
 
-;************ Controller's mapping **************
-PPI	equ	08000h;  8255 fist		  *
-PPI2	equ	0A000h;  8255 second	   	  *
-DISP	equ	0C000h;  8275 display adapter	  *
-DMA	equ	0E000h;  8257 DMA chip	    	  *
-;************************************************
-
 GETMAXMEM	EQU 0F830h

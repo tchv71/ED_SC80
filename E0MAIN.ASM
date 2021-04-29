@@ -15,6 +15,7 @@
 ;	02-Apr-2021 -  Original RK back-adaptation
 ;	25-Apr-2021 -  Controller addresses table
 
+RK60k	EQU	0
 
 PUBLIC	INFADR
 ;PUBLIC	INFSTR
@@ -50,11 +51,19 @@ PUBLIC	VRAM_ADR,PPI_ADR,DISP_ADR,DMA_ADR
 
 	JMP	START
 ; Controller addresses table
-VRAM_ADR:	DW VRAM	; VRAM buffer start address - 76d0h
-PPI_ADR:	DW PPI 	; VV55 keyboard Controller
-PPI2_ADR:	DW PPI2	; VV55 additional PPI  - 0A000h
-DISP_ADR:	DW DISP	; VG75 Display Controller - 0C000h
-DMA_ADR:	DW DMA	; VT57 DMA Controller - 0E000h
+IF	RK60k
+	VRAM_ADR:	DW 0E7C2h	; VRAM buffer start address - 0E7C2h
+	PPI_ADR:	DW 0F780h 	; VV55 keyboard Controller - 0F780h
+	PPI2_ADR:	DW 0F7A0h	; VV55 additional PPI  - 0F7A0h
+	DISP_ADR:	DW 0F7C0h	; VG75 Display Controller - 0F7C0h
+	DMA_ADR:	DW 0F7E0h	; VT57 DMA Controller - 0F7E0h
+ELSE
+	VRAM_ADR:	DW 77c2h	; VRAM buffer start address - 77c2h
+	PPI_ADR:	DW 8000h 	; VV55 keyboard Controller - 8000h
+	PPI2_ADR:	DW 0A000h	; VV55 additional PPI  - 0A000h
+	DISP_ADR:	DW 0C000h	; VG75 Display Controller - 0C000h
+	DMA_ADR:	DW 0E000h	; VT57 DMA Controller - 0E000h
+ENDIF
 		DW 0,0,0,0 ; Reserved for future use
 
 START::
