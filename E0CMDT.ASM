@@ -3,11 +3,12 @@
 ;*                        (c) TCHV,1989-93              *
 ;********************************************************
 
+
+IFNDEF INFADR
 INCLUDE E0DISP.MAC
-
 PUBLIC	FNDCMD
-
 EXTRN INFADR
+ENDIF
 
 @Left		equ	8h
 @Right		equ	18h
@@ -19,15 +20,15 @@ Cntrl		equ	40h
 
 
 CMD	MACRO	Adr1,Key1,Adr2,Key2
-extrn	Adr1
+;extrn	Adr1
 	DW	Adr1,Key1
 	ifnb	<Adr2>
-extrn	Adr2
+;extrn	Adr2
 	DW	Adr2,Key2
 	endif
 	ENDM
 
-	dseg
+	;dseg
 ; *** Editor command table ***
 ; DW CMD_ADDR
 ; DB First Command sym, should be ANDed with 40h or ORed with 40h if Ctrl assumed pressed
@@ -118,7 +119,7 @@ FirstSym:
 
 	MOV	A,B	; Read next symbol if needed
 	ORA	A
-	CZ	GETCHR##
+	CZ	GETCHR
 	ani	11011111b	; toupper(Acc)
 	MOV	B,A
 	CMP	M

@@ -1,9 +1,11 @@
 ;----- Display one editor string ----------
 
-include E0DISP.MAC
+;include E0DISP.MAC
 ;include RK86.MAC
+IFNDEF	CURSM
 extrn CURSM
 EXTRN	DISP_ADR, DMA_ADR, VRAM_ADR
+ENDIF
 
 SETSCR::
 	;RET
@@ -83,4 +85,6 @@ LPOS:	DB	0
 ;RK_END
 @RK_END::
 	DW	0
-	end
+IFNDEF	noend
+	END
+ENDIF
