@@ -6,6 +6,7 @@
     </Plugin>
   </Plugins>
   <VirtualDirectory Name="ED_SC80">
+    <File Name="EDSC80.ASM"/>
     <File Name="sc80_koi7.txt"/>
     <File Name="E0FILEIO.ASM"/>
     <File Name="sc80_utf8.txt"/>
@@ -32,8 +33,6 @@
       <Project Name="ED_SC80" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
   <Settings Type="Dynamic Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -65,7 +64,7 @@
       <CustomBuild Enabled="yes">
         <RebuildCommand>make clean all</RebuildCommand>
         <CleanCommand>make clean</CleanCommand>
-        <BuildCommand>make all</BuildCommand>
+        <BuildCommand>make bin</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
@@ -123,4 +122,6 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

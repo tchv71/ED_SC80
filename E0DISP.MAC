@@ -1,3 +1,4 @@
+IFNDEF	TabStep
 ;****************************************************
 ;    SC80 text screen editor    (C) TCHV,1989-93    *
 ;                                                   *
@@ -5,7 +6,6 @@
 ;                                                   *
 ;          This file is for Original 32k version    *
 ;****************************************************
-
 TabStep		equ	8
 ;LimitedCharSet	equ	1
 
@@ -36,3 +36,4 @@ CURSOR_BLOCK	equ	0EDh
 CURSOR_LINE	equ	0DDh
 
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+ENDIF

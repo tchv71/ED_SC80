@@ -5,7 +5,10 @@
 
 ?Ctrl	equ	40h
 ?Shift	equ	20h
+
+IFNDEF	PPI_ADR
 EXTRN	PPI_ADR
+ENDIF
 
 ; Return SYMBOL and SHIFT/CNTRL flags
 ; 	40h - CNTRL  &  80h - SHIFT
@@ -424,10 +427,12 @@ KEYBRD:	DB	0CH,1FH,1BH,0,1,2,3,4
 PNT:	DW	ET1
 ET1:	DB	0ffh
 	ds	9
-	DSEG
+	;DSEG
 NREP:	DS	1
 PRESS:	DS	10
 ET2:	DS	10
+IFNDEF	noend
 	END
+ENDIF
 
 
