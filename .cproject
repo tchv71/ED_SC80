@@ -107,13 +107,13 @@
         		
         <buildTargets>
             			
-            <target name="bin/ESC80_32k_NoInit.rk" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+            <target name="bin/ESC80_32k.rk" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>make</buildCommand>
                 				
                 <buildArguments/>
                 				
-                <buildTarget>bin/ESC80_32k_NoInit.rk</buildTarget>
+                <buildTarget>bin/ESC80_32k.rk</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
                 				

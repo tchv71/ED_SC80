@@ -17,9 +17,11 @@ clean:
 	rm *.REL
 	rm *.PRN
 
-all: EDSC80.REL
-	$(M80PATH)/L80 /P:100,EDSC80,EDSC80.BIN/U/N/E/Y #Writeout to EDSC80.BIN
-	../makerk/Release/makerk 0 EDSC80.BIN bin/ESC80_32k_NoInit.rk
+all: bin/ESC80_32k.rk
 
-run: bin/ESC80_32k_NoInit.rk
-	$(EMUPATH)/Emu80Qt bin/ESC80_32k_NoInit.rk
+bin/ESC80_32k.rk: EDSC80.REL
+	$(M80PATH)/L80 /P:100,EDSC80,EDSC80.BIN/U/N/E/Y #Writeout to EDSC80.BIN
+	../makerk/Release/makerk 0 EDSC80.BIN $@
+
+run: bin/ESC80_32k.rk
+	$(EMUPATH)/Emu80Qt bin/ESC80_32k.rk
