@@ -1,3 +1,4 @@
+IFNDEF	?Ctrl
 ;** RK86.MAC - Radio-86 computer specific constants & macro ***
 ;
 ;	09-Oct-1992  - first version
@@ -17,3 +18,4 @@
 	ENDM
 
 GETMAXMEM	EQU 0F830h
+ENDIF

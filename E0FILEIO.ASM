@@ -3,8 +3,10 @@
 ;*                        (c) TCHV,1989-93              *
 ;********************************************************
 
+IFNDEF	nivgr
 EXTRN	nivgr,werhgr,START,CURX,BLBEG,BLEND
 EXTRN	JMPBL,OUT1, MARK,DISADR
+ENDIF
 
 RDFIL::	LXI	H,0
 	CALL	0F824H
@@ -53,4 +55,6 @@ WRBL::	CALL	MARK
 WRSEG:
 	CALL	0F82AH ; Checksum calc
 	JMP	0F827H ; Write block to tape
+IFNDEF	noend
 	END
+ENDIF
