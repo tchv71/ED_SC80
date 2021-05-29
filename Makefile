@@ -1,7 +1,11 @@
+EMUPATH=/Users/tchv/emu80v4/build-Emu80qt-Desktop_x86_darwin_generic_mach_o_64bit-Release/Emu80qt.app/Contents/MacOS
+M80PATH=/Users/tchv/.cargo/bin
+
 .SUFFIXES: .ASM .REL
 
 .ASM.REL:
-	/Users/tchv/.cargo/bin/M80 '=$< /I/L'
+	$(M80PATH)/M80 '=$< /I/L'
+
 	
 E0MAIN.REL: E0MAIN.ASM E0DISP.MAC RK86.MAC E0BREAK.MAC
 
@@ -11,8 +15,10 @@ E0DISP.REL: E0DISP.ASM E0DISP.MAC
 clean:
 	rm *.REL
 	rm *.PRN
-#bin: ESC80.REL
-#	/Users/tchv/.cargo/bin/L80 /P:100,ESC80,ESC80.BIN/N/E/Y #Writeout to ESC80.BIN
+
 all: HEADER.REL E0MAIN.REL E0FILEIO.REL E0CMDT.REL E0GETC.REL E0DISP.REL
-	/Users/tchv/.cargo/bin/L80 /P:104,HEADER,E0MAIN,E0FILEIO,E0CMDT,E0GETC,E0DISP,ESC80.RK/N/E/Y #Writeout to ESC80.RK
+	$(M80PATH)/L80 /P:104,HEADER,E0MAIN,E0FILEIO,E0CMDT,E0GETC,E0DISP,ESC80.RK/N/E/Y #Writeout to ESC80.RK
 	cp ESC80.RK bin/ESC80.rk
+
+run: bin/ESC80.rk
+	$(EMUPATH)/Emu80Qt bin/ESC80.rk
