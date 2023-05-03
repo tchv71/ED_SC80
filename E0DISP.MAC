@@ -18,10 +18,11 @@ LogicWidth	equ	64 ; 78 - 8 trailing blank symbols - 5 end blank symbols
 LogicHeight	equ	ScrHeight-2
 
 ScrSize		equ	(ScrHeight+ScrYOffset+2)*ScrWidth
-ScrStart	equ	76D0h ; Display buffer start
+;ScrStart	equ	76D0h ; Display buffer start
 
 ; Start address of physical screen - visible characters
-VRAM		equ	ScrStart+ScrYOffset*ScrWidth+ScrXOffset
+ScrOffset	equ	ScrYOffset*ScrWidth+ScrXOffset
+;VRAM		equ	ScrStart+ScrOffset
 
 SetScrAddr	macro
 		endm
@@ -32,8 +33,13 @@ WriteNextSym	macro
 		endm
 
 space		equ	20h
+IFDEF	PALMIRA
+CURSOR_BLOCK	equ	0E8h
+CURSOR_LINE	equ	0D8h
+ELSE
 CURSOR_BLOCK	equ	0EDh
 CURSOR_LINE	equ	0DDh
+ENDIF
 
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ENDIF

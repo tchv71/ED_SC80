@@ -62,7 +62,8 @@ CMDTBL::
 	CMD	PAGEUP,	Cntrl+@Up,	PAGEDN,	Cntrl+@Down
 
 	CMD	DELLIN,	'D', 	CONT_SRREP, 	'L' ; Continue SEARCH/REPLACE
-	CMD	SWPWIN,	'W', WINUP,'U',	WINDN,	'K'
+	CMD	SWPWIN,	'W', WINUP,'U'
+	CMD	WINDN,	'K'
 
 	;*****	Block	commands *****
 	CMD	DISBEG,	'Q'+@Left*256,	DISEND,	'Q'+@Right*256
@@ -105,7 +106,7 @@ FirstSym:
 	push	h
 	MOV	C,A
 	;lxi	h,INFSTR+1
-	LHLD	INFADR
+	CALL	GETINFADR
 	INX	H
 	SetScrAddr
 	MVI	A,'^'

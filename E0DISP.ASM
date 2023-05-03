@@ -15,9 +15,11 @@ SETSCR::
 	INX	H
 	MVI	M,0
 	DCX	H
-	MVI	M,ScrWidth-1
-	MVI	M,(ScrHeight+5-1)
- 	MVI	M,99H
+
+
+	MVI	M,4DH;ScrWidth-1
+	MVI	M,5DH;(ScrHeight+5-1)
+	MVI	M,0FFH
 	mov	m,a
 	INX	H
 	MVI	M,27H
@@ -42,7 +44,7 @@ SETSCR::
 	PUSH	B
 	XCHG
 	LHLD	VRAM_ADR
-	LXI	B,ScrStart-VRAM
+	LXI	B,-ScrOffset
 	DAD	B
 	XCHG
 	MOV	M,E

@@ -1,8 +1,8 @@
 	.PHASE 0
 	CSEG
 noend	equ	1
-include	E0DISP.MAC
 include	RK86.MAC
+include	E0DISP.MAC
 include	E0BREAK.MAC
 include	E0MAIN.ASM
 include	E0DISP.ASM

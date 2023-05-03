@@ -19,3 +19,7 @@ IFNDEF	?Ctrl
 
 GETMAXMEM	EQU 0F830h
 ENDIF
+
+; Platform selection
+;RK60k	EQU	1
+PALMIRA EQU	1
