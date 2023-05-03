@@ -8,3 +8,8 @@ ESC80.RK
 bin/ESC80_32k.rk
 *.BIN
 ED_SC80.layout
+/.codelite
+/.vs/ED_SC80/FileContentIndex
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite
+*.json
