@@ -1,4 +1,4 @@
-;**********************************************
+	;**********************************************
 ;*        TCHV text full-screen editor        *
 ;*               (c) 1989-92                  *
 ;* Text processing and general control module *
@@ -190,7 +190,8 @@ SETINF:	CALL	DRLIN
 	JMP	DISCUR
 
 WRMSRT:	CALL	SAVMOD
-OUT1:	CALL	DISPLY
+OUT1:	call	SETRST
+	CALL	DISPLY
 OUT3:	CALL	GETMAXMEM;lhld	6
 	sphl
 	JMP	M03
@@ -362,8 +363,33 @@ D01:
 	XRA	A
 	STA	?END
 	PUSH	B
-	lda	DISPOS
+
+	push	h
+	push	d
+	lhld	STRADR
+	xchg
+	mov	a,h
+	cmp	d
+	jnz	@220
+	mov	a,l
+	cmp	e
+	jnz	@220
+	pop	d
+	pop	h
+	push	d
+	lxi	d,STRRED
+	call	DISSTR
+	pop	d
+	xchg
+	CALL	NEXTST
+	xchg
+	jmp	@221
+@220:
+	pop	d
+	pop	h
+	;lda	DISPOS
 	CALL	DISSTR
+@221:
 	POP	B
 	CPI	0FFH
 	JZ	@11

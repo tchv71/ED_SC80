@@ -17,9 +17,9 @@ clean:
 	del *.REL
 	del *.PRN
 
-all: bin/ESC80_32k.rk
+all: bin/ESC80_palmira.rk
 
-bin/ESC80_32k.rk: EDSC80.BIN
+bin/ESC80_palmira.rk: EDSC80.BIN
 	../makerk/Release/makerk.exe 0 EDSC80.BIN $@
 
 EDSC80.BIN: EDSC80.REL
