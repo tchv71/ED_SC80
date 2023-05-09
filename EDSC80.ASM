@@ -1,6 +1,7 @@
 	.PHASE 0
 	CSEG
 noend	equ	1
+include RkConfig.mac
 include	RK86.MAC
 include	E0DISP.MAC
 include	E0BREAK.MAC

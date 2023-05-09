@@ -48,25 +48,25 @@ PUBLIC	VRAM_ADR,PPI_ADR,DISP_ADR,DMA_ADR
 	JMP	START
 ; Controller addresses table
 IFDEF	PALMIRA
-	VRAM_ADR:	DW 0B7C2h	; VRAM buffer start address - 0E7C2h
-	PPI_ADR:	DW 0C200h 	; VV55 keyboard Controller - 0F780h
-	PPI2_ADR:	DW 0C400h	; VV55 additional PPI  - 0F7A0h
-	DISP_ADR:	DW 0C000h	; VG75 Display Controller - 0F7C0h
-	DMA_ADR:	DW 0E000h	; VT57 DMA Controller - 0F7E0h
+	VRAM_ADR:	DW 0B7C2h	; VRAM buffer visible start address - 0B7C2h
+	PPI_ADR:	DW 0C200h 	; VV55 keyboard Controller - 0C200h
+	PPI2_ADR:	DW 0C400h	; VV55 additional PPI  - 0C400h
+	DISP_ADR:	DW 0C000h	; VG75 Display Controller - 0C000h
+	DMA_ADR:	DW 0E000h	; VT57 DMA Controller - 0E000h
 ELSE
-  IFDEF	RK60k
-	VRAM_ADR:	DW 0E7C2h	; VRAM buffer start address - 0E7C2h
+IFDEF	RK60k
+	VRAM_ADR:	DW 0E7C2h	; VRAM buffer visible start address - 0E7C2h
 	PPI_ADR:	DW 0F780h 	; VV55 keyboard Controller - 0F780h
 	PPI2_ADR:	DW 0F7A0h	; VV55 additional PPI  - 0F7A0h
 	DISP_ADR:	DW 0F7C0h	; VG75 Display Controller - 0F7C0h
 	DMA_ADR:	DW 0F7E0h	; VT57 DMA Controller - 0F7E0h
-  ELSE
-	VRAM_ADR:	DW 77C2h	; VRAM buffer start address - 77c2h
+ELSE
+	VRAM_ADR:	DW 77C2h	; VRAM buffer visible start address - 77c2h
 	PPI_ADR:	DW 08000h 	; VV55 keyboard Controller - 8000h
 	PPI2_ADR:	DW 0A000h	; VV55 additional PPI  - 0A000h	
 	DISP_ADR:	DW 0C000h	; VG75 Display Controller - 0C000h
 	DMA_ADR:	DW 0E000h	; VT57 DMA Controller - 0E000h
-  ENDIF
+ENDIF
 ENDIF
 		DW 0,0,0,0 ; Reserved for future use
 
@@ -209,7 +209,7 @@ CLS:	;lxi	h,ScrStart
 	lxi	b,ScrSize-1
 
 	SetScrAddr
-	mvi	a,84H
+	mvi	a,20h ; 84H
 	WriteNextSym
 ClsLoop:
 	mvi	a,space

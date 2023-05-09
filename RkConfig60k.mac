@@ -1,0 +1,4 @@
+; Platform selection
+RK60k	EQU	1
+;PALMIRA EQU	1
+;RK32k	EQU	1

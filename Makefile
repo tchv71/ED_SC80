@@ -1,29 +1,52 @@
 EMUPATH=D:\Emu80qt_40444
 M80PATH=D:/M80
+ASMDEP=EDSC80.ASM E0MAIN.ASM E0FILEIO.ASM E0CMDT.ASM E0GETC.ASM E0DISP.ASM E0DISP.MAC RK86.MAC E0BREAK.MAC RkConfig.mac
 
-.SUFFIXES: .ASM .REL
+.SUFFIXES: .ASM .REL .BIN
 
 .ASM.REL:
-	$(M80PATH)/M80 '=$< /I/L'
+	$(M80PATH)/M80 '$@=$< /I/L'
 
-	
-E0MAIN.REL: E0MAIN.ASM E0DISP.MAC RK86.MAC E0BREAK.MAC
+EDSC803.REL: $(ASMDEP)
+	$(M80PATH)/M80 '$@=$< /I/L'
 
-E0DISP.REL: E0DISP.ASM E0DISP.MAC
+EDSC806.REL: $(ASMDEP)
+	$(M80PATH)/M80 '$@=$< /I/L'
 
-EDSC80.REL: EDSC80.ASM E0MAIN.ASM E0FILEIO.ASM E0CMDT.ASM E0GETC.ASM E0DISP.ASM E0DISP.MAC RK86.MAC E0BREAK.MAC
+EDSC80P.REL: $(ASMDEP)
+	$(M80PATH)/M80 '$@=$< /I/L'
 
 clean:
 	del *.REL
 	del *.PRN
+	del *.BIN
 
-all: bin/ESC80_palmira.rk
+all: bin/ESC80_palmira.rkl bin/ESC80_32k.rk bin/ESC80_60k.rk
 
-bin/ESC80_palmira.rk: EDSC80.BIN
-	../makerk/Release/makerk.exe 0 EDSC80.BIN $@
+palmira:
+	copy /y RkConfigPalmira.mac RkConfig.mac
+# touch equivalent
+	copy /b RkConfig.mac +,,
 
-EDSC80.BIN: EDSC80.REL
-	$(M80PATH)/L80 /P:100,EDSC80,EDSC80.BIN/N/E
+Rk60k:
+	copy /y RkConfig60k.mac RkConfig.mac
+	copy /b RkConfig.mac +,,
+
+Rk32k:
+	copy /y RkConfig32k.mac RkConfig.mac
+	copy /b RkConfig.mac +,,
+
+bin/ESC80_palmira.rkl: palmira EDSC80P.BIN
+	../makerk/Release/makerk.exe 0 EDSC80P.BIN $@
+
+bin/ESC80_60k.rk: Rk60k EDSC806.BIN
+	../makerk/Release/makerk.exe 0 EDSC806.BIN $@
+
+bin/ESC80_32k.rk: Rk32k EDSC803.BIN
+	../makerk/Release/makerk.exe 0 EDSC803.BIN $@
+
+.REL.BIN:
+	$(M80PATH)/L80 /P:100,$<,$@/N/E
 
 run: bin/ESC80_32k.rk
 	$(EMUPATH)/Emu80Qt bin/ESC80_palmira.rk

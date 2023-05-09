@@ -16,10 +16,15 @@ SETSCR::
 	MVI	M,0
 	DCX	H
 
-
+IFDEF	Palmira
 	MVI	M,4DH;ScrWidth-1
 	MVI	M,5DH;(ScrHeight+5-1)
 	MVI	M,0FFH
+ELSE
+	MVI	M,ScrWidth-1
+	MVI	M,(ScrHeight+5-1)
+ 	MVI	M,99H
+ENDIF
 	mov	m,a
 	INX	H
 	MVI	M,27H
