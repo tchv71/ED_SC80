@@ -206,6 +206,8 @@ MAXRAM:	CALL	GETMAXMEM;LHLD	6
 
 CLS:	;lxi	h,ScrStart
 	lhld	VRAM_ADR
+	lxi	b,-ScrOffset
+	dad	b
 	lxi	b,ScrSize-1
 
 	SetScrAddr
@@ -2893,9 +2895,9 @@ _DispNxtChr:
 	CPI	9
 	JZ	_DispTab
 ifdef	LimitedCharSet
-	ORA	A
-	JP	$+5
-	MVI	A,0D6H
+	;ORA	A
+	;JP	$+5
+	;MVI	A,0D6H
 endif
 	WriteNextSym
 	INX	D
