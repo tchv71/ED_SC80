@@ -37,8 +37,8 @@ IFDEF	PALMIRA
 CURSOR_BLOCK	equ	0E8h
 CURSOR_LINE	equ	0D8h
 ELSE
-CURSOR_BLOCK	equ	0EDh
-CURSOR_LINE	equ	0DDh
+CURSOR_BLOCK	equ	0E3h
+CURSOR_LINE	equ	0D3h
 ENDIF
 
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
