@@ -1,4 +1,4 @@
-	.PHASE 0
+	.PHASE 100h
 	CSEG
 noend	equ	1
 include RkConfig.mac

@@ -19,7 +19,7 @@ SETSCR::
 IFDEF	Palmira
 	MVI	M,4DH;ScrWidth-1
 	MVI	M,5DH;(ScrHeight+5-1)
-	MVI	M,0FFH
+	MVI	M,0EFH
 ELSE
 	MVI	M,ScrWidth-1
 	MVI	M,(ScrHeight+5-1)

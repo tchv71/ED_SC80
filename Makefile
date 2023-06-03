@@ -1,6 +1,7 @@
 EMUPATH=D:\Emu80qt_40444
 M80PATH=D:/M80
 ASMDEP=EDSC80.ASM E0MAIN.ASM E0FILEIO.ASM E0CMDT.ASM E0GETC.ASM E0DISP.ASM E0DISP.MAC RK86.MAC E0BREAK.MAC RkConfig.mac
+PORT=COM8
 
 .SUFFIXES: .ASM .REL .BIN
 
@@ -23,6 +24,10 @@ clean:
 
 all: bin/ESC80_palmira.rkl bin/ESC80_32k.rk bin/ESC80_60k.rk
 
+send: bin/ESC80_palmira.rkl
+	MODE $(PORT): baud=115200 parity=N data=8 stop=1
+	cmd /C copy /B bin\ESC80_palmira.rkl $(PORT)
+
 palmira:
 	copy /y RkConfigPalmira.mac RkConfig.mac
 # touch equivalent
@@ -37,7 +42,7 @@ Rk32k:
 	copy /b RkConfig.mac +,,
 
 bin/ESC80_palmira.rkl: palmira EDSC80P.BIN
-	../makerk/Release/makerk.exe 0 EDSC80P.BIN $@
+	../makerk/Release/makerk.exe 100 EDSC80P.BIN $@
 
 bin/ESC80_60k.rk: Rk60k EDSC806.BIN
 	../makerk/Release/makerk.exe 0 EDSC806.BIN $@
@@ -46,7 +51,9 @@ bin/ESC80_32k.rk: Rk32k EDSC803.BIN
 	../makerk/Release/makerk.exe 0 EDSC803.BIN $@
 
 .REL.BIN:
-	$(M80PATH)/L80 /P:100,$<,$@/N/E
+	$(M80PATH)/L80 /P:100,$<,$@/N/Y/E
+
+EDSC80P.BIN: EDSC80P.REL
 
 run: bin/ESC80_32k.rk
 	$(EMUPATH)/Emu80Qt bin/ESC80_palmira.rk
