@@ -18,63 +18,34 @@ GETCHC::
 	CALL	GETCHR
 	PUSH	H
 	push	psw
+	PUSH	D
 	ANI	3FH
 	MOV	C,A
 	LDA	@CTRL
+	MOV	E,A
 	;LDA	PPI+2
 	LHLD	PPI_ADR
-	INR	H
-	DCR	H
-	JZ	GETCHC2
 	INX	H
 	INX	H
-	ANA	M
-	PUSH	H ; PPI+2
+	CALL	_in
+	ANA	E
 	MOV	A,C
 	JNZ	$+5
 	ORI	40H
 	MOV	C,A
 
 	LDA	@SHFT
-	POP	H
-	ANA	M
+	MOV	E,A
+	ANA	E
 	MOV	A,C
 	JNZ	$+5
 	ORI	80H
 	mov	b,a
+	POP	D
 	pop	psw
 	mov	c,a
 	POP	H
 	RET
-
-GETCHC2:
-	;LDA	PPI+2
-	MOV	A,L
-	ADI	2
-	STA	GTCHC01+1
-	STA	GTCHC02+1
-	LXI	H,@CTRL
-GTCHC01:
-	IN	0
-	ANA	M
-	MOV	A,C
-	JNZ	$+5
-	ORI	40H
-	MOV	C,A
-
-	LXI	H,@SHFT
-GTCHC02:
-	IN	0
-	ANA	M
-	MOV	A,C
-	JNZ	$+5
-	ORI	80H
-	mov	b,a
-	pop	psw
-	mov	c,a
-	POP	H
-	RET
-
 
 IFDEF	CPM
 BIOS_CONIN:
