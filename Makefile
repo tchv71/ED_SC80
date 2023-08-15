@@ -27,9 +27,9 @@ clean:
 
 all: bin/ESC80_palmira.rkl bin/ESC80_32k.rk bin/ESC80_60k.rk
 
-send: bin/ESC80_CPM.rkl
+send: bin\ESC80_CPM.rkl
 	MODE $(PORT): baud=115200 parity=N data=8 stop=1
-	cmd /C copy /B  bin\ESC80_palmira.rkl $(PORT)
+	cmd /C copy /B  $< $(PORT)
 
 palmira:
 	copy /y RkConfigPalmira.mac RkConfig.mac
