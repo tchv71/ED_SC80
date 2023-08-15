@@ -36,6 +36,7 @@ GETCHC::
 
 	LDA	@SHFT
 	MOV	E,A
+	CALL	_in
 	ANA	E
 	MOV	A,C
 	JNZ	$+5
