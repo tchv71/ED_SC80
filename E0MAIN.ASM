@@ -54,11 +54,11 @@ PUBLIC	VRAM_ADR,PPI_ADR,DISP_ADR,DMA_ADR
 ; Controller addresses table
 IFDEF	PALMIRA
 IFDEF	CPM
-	VRAM_ADR:	DW 0EEd0h+800h+ScrOffset	; VRAM buffer visible start address - 0B7C2h
-	PPI_ADR:	DW 00h 		; VV55 keyboard Controller - 0C200h
-	PPI2_ADR:	DW 10h		; VV55 additional PPI  - 0C400h
-	DISP_ADR:	DW 20H		; VG75 Display Controller - 0C000h
-	DMA_ADR:	DW 30h		; VT57 DMA Controller - 0E000h
+	VRAM_ADR:	DW 0EEd0h+800h+ScrOffset	; VRAM buffer visible start address - 0F7C2h
+	PPI_ADR:	DW 00h 		; VV55 keyboard Controller -	00h
+	PPI2_ADR:	DW 10h		; VV55 additional PPI -		10h
+	DISP_ADR:	DW 20H		; VG75 Display Controller -	20h
+	DMA_ADR:	DW 30h		; VT57 DMA Controller -		30h
 ELSE
 	VRAM_ADR:	DW 0B770h	; VRAM buffer visible start address - 0B7C2h
 	PPI_ADR:	DW 0C200h 	; VV55 keyboard Controller - 0C200h
