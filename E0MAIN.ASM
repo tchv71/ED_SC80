@@ -1684,9 +1684,12 @@ No_extend:
 	jz	exit_inp_str
 	CPI	@exit_key
 	JZ	IN4
+	CPI	7FH
+	JZ	Del_Sym
 	CPI	@backsp_key
 	JNZ	Ins_Sym
 
+Del_Sym:
 	LDAX	B
 	DCR	A
 	JZ	Get_Key
