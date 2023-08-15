@@ -103,45 +103,6 @@ GETCHR::
 	POP	H
 	RET
 
-if 0
-; Perform key translation Acc->Acc (Reverse from CP/M)
-CorrCntrlRev:
-	push	h
-	push	b
-	mov	b,a
-	lxi	h,CorrTblRev
-@loop:	mov	a,m
-	inx	h
-	inx	h
-	inr	a
-	jz	@exit
-	dcr	a
-	cmp	b
-	jnz	@loop
-	dcx	h
-	mov	b,m
-@exit:	mov	a,b
-	ani	7fh
-	pop	b
-	pop	h
-	ret
-
-; Key translation table
-CorrTblRev:
-;****  Arrow keys ****
-	db	'E'-40h,	19h	; Up
-	db	'X'-40h,	1Ah	; Down
-	db	'H'-40h,	8	; Left
-	db	'D'-40h,	18h	; Right
-;*** Cntrl+Arrow keys ***
-	db	'R'-40h,	19h	; ^Up
-	db	'C'-40h,	1Ah	; ^Down
-	db	'A'-40h,	8	; ^Left
-	db	'F'-40h,	18h	; ^Right
-;*** Other keys ***
-	db	8,	7fH
-	db	0ffh
-ENDIF
 ELSE
 ; Get character from concole (returns in Acc)
 GETCHR::

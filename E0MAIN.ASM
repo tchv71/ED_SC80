@@ -1940,10 +1940,10 @@ _out:	INR	H
 	MOV	M,A
 	RET
 _out_port:
-	MOV	H,A
+	PUSH	PSW
 	MOV	A,L
 	STA	$+5
-	MOV	A,H
+	POP	PSW
 	OUT	0
 	RET
 
