@@ -631,7 +631,7 @@ wniz:	PUSH	D
 	SHLD	STRADR
 	CALL	INRCUR
 	LDA	YSIZE
-	DCR	A
+	;DCR	A
 	MOV	B,A
 	LDA	CURY
 	CMP	B
@@ -1922,6 +1922,30 @@ local	@no_upc
 	sui	20h
 @No_Upc:
 	endm
+
+_in:	INR	H
+	DCR	H
+	JZ	_in_port
+	MOV	A,M
+	RET
+_in_port:
+	MOV	A,L
+	STA	$+4
+	IN	0
+	RET
+
+_out:	INR	H
+	DCR	H
+	jz	_out_port
+	MOV	M,A
+	RET
+_out_port:
+	MOV	H,A
+	MOV	A,L
+	STA	$+5
+	MOV	A,H
+	OUT	0
+	RET
 
 SearchStr:
 	lxi	b,'a' SHL 8 + 'z'+1
