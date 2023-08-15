@@ -8,18 +8,18 @@ EXTRN	DISP_ADR, DMA_ADR, VRAM_ADR
 ENDIF
 
 SETSCR::
-	;RET
-
-	;LXI	H,DISP+1
 	LHLD	DISP_ADR
+	INR	H
+	DCR	H
+	JZ	SETSCR2
 	INX	H
 	MVI	M,0
 	DCX	H
 
 IFDEF	Palmira
-	MVI	M,4DH;ScrWidth-1
-	MVI	M,5DH;(ScrHeight+5-1)
-	MVI	M,0EFH
+	MVI	M,ScrWidth-1
+	MVI	M,(ScrHeight+5-1)+40H
+	MVI	M,0FFH
 ELSE
 	MVI	M,ScrWidth-1
 	MVI	M,(ScrHeight+5-1)
@@ -62,16 +62,87 @@ ENDIF
 	POP	H ; DMA+8
 	MVI	M,0A4H
 	RET
+
+SETSCR2:
+	MOV	H,A
+	MOV	A,L
+	STA	SS02+1
+	STA	SS03+1
+	STA	SS04+1
+	STA	SS05+1
+	INR	A
+	STA	SS01+1
+	STA	SS06+1
+	STA	SS07+1
+	STA	SS08+1
+	XRA	A
+SS01:	out	0
+
+	MVI	A,ScrWidth-1
+SS02:	out	0
+	MVI	A,(ScrHeight+5-1)+40H
+SS03:	out	0
+	MVI	A,0FFH
+SS04:	out	0
+	MOV	A,H
+SS05:	out	0
+
+	MVI	A,27H
+SS06:	out	0
+SS07:	in	0
+SS08:	in	0
+	ANI	20H
+	JZ	SS08
+
+	;LXI	H,DMA+8
+	LDA	DMA_ADR
+	ADI	8
+	STA	SS10
+	STA	SS15
+	SUI	4
+	STA	SS11+1
+	STA	SS12+1
+	INR	A
+	STA	SS13+1
+	STA	SS14+1
+	MVI	A,80H
+SS10:	out	0
+	;MVI	L,Low(DMA+4)
+	PUSH	B
+	XCHG
+	LHLD	VRAM_ADR
+	LXI	B,-ScrOffset
+	DAD	B
+	POP	D
+	XCHG
+	MOV	A,E
+SS11:	out	0
+	MOV	A,D
+SS12:	out	0
+	POP	D
+	INX	H
+	MVI	A,Low(ScrSize-1)
+SS13:	out	0
+	MVI	A,High(ScrSize-1) or 40h
+SS14:	out	0
+	;MVI	L,Low(DMA+8)
+	MVI	A,0A4H
+SS15:	out	0
+	RET
 	
 SetCursor::
+	PUSH	D
 	MVI	A,80H
 	;STA	DISP+1
 	XCHG
 	LHLD	DISP_ADR
+	INR	H
+	DCR	H
+	JZ	SetCursor2
 	INX	H
 	MOV	M,A
 	DCX	H
-	MOV     A,E
+	MOV	A,E
 	PUSH	H
 	LXI	H,LPOS
 	ADD	M
@@ -83,9 +154,36 @@ SetCursor::
 	;STA	DISP
 	MOV	M,A
 	MOV	A,D
-	ADI	2
+	ADI	ScrYOffset-1
 	;STA	DISP
 	MOV	M,A
+	POP	D
+	RET
+
+SetCursor2:
+	MOV	A,L
+	STA	SC02+1
+	STA	SC03+1
+	INR	A
+	STA	SC01+1
+	MVI	A,80H
+SC01:	out	0
+	MOV	A,E
+	PUSH	H
+	LXI	H,LPOS
+	ADD	M
+	INX	H
+	ADD	M
+	POP	H
+	DCR	A
+	ADI	ScrXOffset
+	;STA	DISP
+SC02:	out	0
+	MOV	A,D
+	ADI	ScrYOffset-1
+	;STA	DISP
+SC03:	out	0
+	POP	D
 	RET
 
 LPOS:	DB	0

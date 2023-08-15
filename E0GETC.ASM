@@ -23,6 +23,9 @@ GETCHC::
 	LDA	@CTRL
 	;LDA	PPI+2
 	LHLD	PPI_ADR
+	INR	H
+	DCR	H
+	JZ	GETCHC2
 	INX	H
 	INX	H
 	ANA	M
@@ -44,6 +47,102 @@ GETCHC::
 	POP	H
 	RET
 
+GETCHC2:
+	;LDA	PPI+2
+	MOV	A,L
+	ADI	2
+	STA	GTCHC01+1
+	STA	GTCHC02+1
+	LXI	H,@CTRL
+GTCHC01:
+	IN	0
+	ANA	M
+	MOV	A,C
+	JNZ	$+5
+	ORI	40H
+	MOV	C,A
+
+	LXI	H,@SHFT
+GTCHC02:
+	IN	0
+	ANA	M
+	MOV	A,C
+	JNZ	$+5
+	ORI	80H
+	mov	b,a
+	pop	psw
+	mov	c,a
+	POP	H
+	RET
+
+
+IFDEF	CPM
+BIOS_CONIN:
+	LHLD	1
+	LXI	D,6
+	DAD	D
+	INX	H
+	MOV	E,M
+	INX	H
+	MOV	D,M
+	XCHG
+	INX	H
+	MOV	E,M
+	INX	H
+	MOV	D,M
+	XCHG
+	PCHL
+
+GETCHR::
+	PUSH	H
+	PUSH	D
+	PUSH	B
+	CALL	BIOS_CONIN
+	POP	B
+	POP	D
+	POP	H
+	RET
+
+if 0
+; Perform key translation Acc->Acc (Reverse from CP/M)
+CorrCntrlRev:
+	push	h
+	push	b
+	mov	b,a
+	lxi	h,CorrTblRev
+@loop:	mov	a,m
+	inx	h
+	inx	h
+	inr	a
+	jz	@exit
+	dcr	a
+	cmp	b
+	jnz	@loop
+	dcx	h
+	mov	b,m
+@exit:	mov	a,b
+	ani	7fh
+	pop	b
+	pop	h
+	ret
+
+; Key translation table
+CorrTblRev:
+;****  Arrow keys ****
+	db	'E'-40h,	19h	; Up
+	db	'X'-40h,	1Ah	; Down
+	db	'H'-40h,	8	; Left
+	db	'D'-40h,	18h	; Right
+;*** Cntrl+Arrow keys ***
+	db	'R'-40h,	19h	; ^Up
+	db	'C'-40h,	1Ah	; ^Down
+	db	'A'-40h,	8	; ^Left
+	db	'F'-40h,	18h	; ^Right
+;*** Other keys ***
+	db	8,	7fH
+	db	0ffh
+ENDIF
+ELSE
 ; Get character from concole (returns in Acc)
 GETCHR::
 	PUSH	H
@@ -430,8 +529,6 @@ KEYBRD:	DB	0CH,1FH,1BH,0,1,2,3,4
 
 
 @RUS:	DB	80H
-@CTRL:	DB	?Ctrl
-@SHFT:	DB	?Shift
 @RD:	DB	0
 
 PNT:	DW	ET1
@@ -441,6 +538,9 @@ ET1:	DB	0ffh
 NREP:	DS	1
 PRESS:	DS	10
 ET2:	DS	10
+ENDIF
+@CTRL:	DB	?Ctrl
+@SHFT:	DB	?Shift
 IFNDEF	noend
 	END
 ENDIF

@@ -1,0 +1,25 @@
+﻿  del *.REL
+  del *.PRN
+  Could Not Find D:\RK\ED_SC80\*.PRN
+  del *.BIN
+  copy /y RkConfigPalmiraCPM.mac RkConfig.mac
+          1 file(s) copied.
+  copy /b RkConfig.mac +,,
+          1 file(s) copied.
+  D:/M80/M80 'EDSC80PC.REL=EDSC80.ASM /I/L'
+  M80 .NET wrapper 1.2
+  By Konamiman, 2023
+  
+  
+  No Fatal error(s)
+  D:/M80/L80 /P:100,EDSC80PC.REL,EDSC80PC.BIN/N/Y/E
+  L80 .NET wrapper 1.2
+  By Konamiman, 2023
+  
+  Link-80  3.44  09-Dec-81  Copyright (c) 1981 Microsoft
+  
+  Data	0100	1A58	< 6488>
+  
+  47128 Bytes Free
+  [0000	1A58	   26]
+  ../makerk/Release/makerk.exe 100 EDSC80PC.BIN bin/ESC80_CPM.rkl

@@ -36,23 +36,36 @@ extrn	GETCHC,GETCHR	; From E0GETC.ASM
 extrn   FNDCMD		; From E0CMDT.ASM
 ENDIF
 
+IFDEF	CPM
+LineSym		equ	5Fh
+DelimSym	equ	7Ch
+ELSE
 LineSym		equ	1ch
 DelimSym	equ	1bh
+ENDIF
 
-INFSTR_OFFS	EQU	ScrWidth*(ScrHeight-1)
+INFSTR_OFFS	EQU	ScrWidth*(LogicHeight+1)
 ;INFSTR	EQU	VRAM+INFSTR_OFFS
 MAXLEN	EQU	127
 
 PUBLIC	VRAM_ADR,PPI_ADR,DISP_ADR,DMA_ADR
 
-	JMP	START
+	JMP	START_COLD
 ; Controller addresses table
 IFDEF	PALMIRA
-	VRAM_ADR:	DW 0B7C2h	; VRAM buffer visible start address - 0B7C2h
+IFDEF	CPM
+	VRAM_ADR:	DW 0EEd0h+800h+ScrOffset	; VRAM buffer visible start address - 0B7C2h
+	PPI_ADR:	DW 00h 		; VV55 keyboard Controller - 0C200h
+	PPI2_ADR:	DW 10h		; VV55 additional PPI  - 0C400h
+	DISP_ADR:	DW 20H		; VG75 Display Controller - 0C000h
+	DMA_ADR:	DW 30h		; VT57 DMA Controller - 0E000h
+ELSE
+	VRAM_ADR:	DW 0B770h	; VRAM buffer visible start address - 0B7C2h
 	PPI_ADR:	DW 0C200h 	; VV55 keyboard Controller - 0C200h
 	PPI2_ADR:	DW 0C400h	; VV55 additional PPI  - 0C400h
 	DISP_ADR:	DW 0C000h	; VG75 Display Controller - 0C000h
 	DMA_ADR:	DW 0E000h	; VT57 DMA Controller - 0E000h
+ENDIF
 ELSE
 IFDEF	RK60k
 	VRAM_ADR:	DW 0E7C2h	; VRAM buffer visible start address - 0E7C2h
@@ -69,11 +82,21 @@ ELSE
 ENDIF
 ENDIF
 		DW 0,0,0,0 ; Reserved for future use
+IFDEF	CPM
+GETMAXMEM:
+	LHLD	6
+	RET
+ENDIF
+
+START_COLD:
+	LXI	H,TXTBUFF
+	MVI	M,0Dh
+	INX	H
+	MVI	M,0FFh
 
 START::
 	CALL	GETMAXMEM;lhld	6
 	sphl
-	MVI	M,0FFH
 	MVI	A,1
 	STA	DISPOS
 	STA	DISPS0
@@ -97,6 +120,26 @@ START::
 	CALL	MAXRAM
 	SHLD	werhgr
 	XCHG
+IFDEF	CPM
+	LXI	H,BUFF+1
+	MOV	A,M
+	ORA	A
+	JZ	NOFILE
+	PUSH	D
+	LXI	D,FCB
+	CALL	GTFNAM
+	LHLD	nivgr
+	CALL	RDBOD
+	LHLD	nivgr
+	MOV	D,H
+	MOV	E,L
+	CALL	CONVRT
+	XCHG
+	SHLD	werhgr
+	POP	D
+	LHLD 	nivgr
+NOFILE:
+ENDIF
 	CALL	CHECKMEM
 	CPI	0FFH
 	JZ	M01
@@ -211,7 +254,7 @@ CLS:	;lxi	h,ScrStart
 	lxi	b,ScrSize-1
 
 	SetScrAddr
-	mvi	a,8Dh ; 84H
+	mvi	a,0;8Dh ; 84H
 	WriteNextSym
 ClsLoop:
 	mvi	a,space
@@ -1570,7 +1613,7 @@ NEW::	CALL	CLRSTR
 	DC	'NEW Y/N:'
 	LHLD	CURX
 	PUSH	H
-	LXI	H,ScrHeight*256+2AH
+	LXI	H,(LogicHeight+2)*256+2AH
 	SHLD	CURX
 	CALL	CURM
 	CALL	GETCHR
@@ -1620,7 +1663,7 @@ Edit_Line:
 	STAX	B
 	MVI	A,kraj
 	STA	CURX
-	MVI	A,ScrHeight
+	MVI	A,LogicHeight+2
 	STA	CURY
 	LHLD	INFADR
 	PUSH	D
@@ -1705,7 +1748,7 @@ CLRSTR:	PUSH	H
 	push	b
 	CALL	LINE
 	LHLD	VRAM_ADR
-	LXI	B,INFSTR_OFFS-ScrWidth
+	LXI	B,INFSTR_OFFS;-ScrWidth
 	DAD	B
 	SetScrAddr
 	mvi	c,LogicWidth
@@ -1776,7 +1819,7 @@ REPLACE::
 	CALL	INFPR
 	DW	33
 	DC	'[G]LOBAL OR [S]TEP:'
-	LXI	H,ScrHeight*256+35H
+	LXI	H,(LogicHeight+2)*256+35H
 	SHLD	CURX
 	CALL	CURM
 REP2:	CALL	GETCHR
@@ -2117,7 +2160,7 @@ MODSCR::
 	CALL	INFPR
 	DW	33
 	DC	'NULL (0-9):'
-	LXI	H,ScrHeight*256+2DH
+	LXI	H,(LogicHeight+2)*256+2DH
 	SHLD	CURX
 	CALL	CURM
 MODSC0:	CALL	GETCHR
@@ -2876,7 +2919,11 @@ NOCR2:	POP	PSW
 
 
 EXIT::	call	CLS
+IFDEF	CPM
+	JMP	0
+ELSE
 	JMP	0F800h;rst	0
+ENDIF
 
 ;----- Display one editor string ----------
 DISSTR::	SetScrAddr
