@@ -206,6 +206,7 @@
     <None Include="E0MAIN.ASM" />
     <None Include="EDSC80.ASM" />
     <None Include="Makefile" />
+    <None Include="README.md" />
     <None Include="RK86.MAC" />
     <None Include="RkConfig.mac" />
     <None Include="RkConfig32k.mac" />
