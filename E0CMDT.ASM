@@ -3,11 +3,12 @@
 ;*                        (c) TCHV,1989-93              *
 ;********************************************************
 
+
+IFNDEF INFADR
 INCLUDE E0DISP.MAC
-
 PUBLIC	FNDCMD
-
 EXTRN INFADR
+ENDIF
 
 @Left		equ	8h
 @Right		equ	18h
@@ -19,16 +20,19 @@ Cntrl		equ	40h
 
 
 CMD	MACRO	Adr1,Key1,Adr2,Key2
-extrn	Adr1
+;extrn	Adr1
 	DW	Adr1,Key1
 	ifnb	<Adr2>
-extrn	Adr2
+;extrn	Adr2
 	DW	Adr2,Key2
 	endif
 	ENDM
 
-	dseg
+	;dseg
 ; *** Editor command table ***
+; DW CMD_ADDR
+; DB First Command sym, should be ANDed with 40h or ORed with 40h if Ctrl assumed pressed
+; DB Second command sym or 0
 CMDTBL::
 	CMD	LFTM,	@Left,		RHTM,	@Right
 	CMD	UPM,	@Up,		DWNM,	@Down
@@ -37,7 +41,7 @@ CMDTBL::
 	DW	0
 
 	CMD	INSCTRL,0
-	CMD	LDEL,	1,		RDEL,	3
+	CMD	LDEL,	3Fh,		RDEL,	3
 	CMD	TAB,	9,		BSC,	12
 	CMD	CR,	13,		REST,	27
 	CMD	DELLT,	Cntrl+1,	DELRT,	Cntrl+3
@@ -58,7 +62,8 @@ CMDTBL::
 	CMD	PAGEUP,	Cntrl+@Up,	PAGEDN,	Cntrl+@Down
 
 	CMD	DELLIN,	'D', 	CONT_SRREP, 	'L' ; Continue SEARCH/REPLACE
-	CMD	SWPWIN,	'W', WINUP,'U',	WINDN,	'K'
+	CMD	SWPWIN,	'W', WINUP,'U'
+	CMD	WINDN,	'K'
 
 	;*****	Block	commands *****
 	CMD	DISBEG,	'Q'+@Left*256,	DISEND,	'Q'+@Right*256
@@ -101,7 +106,7 @@ FirstSym:
 	push	h
 	MOV	C,A
 	;lxi	h,INFSTR+1
-	LHLD	INFADR
+	CALL	GETINFADR
 	INX	H
 	SetScrAddr
 	MVI	A,'^'
@@ -115,7 +120,7 @@ FirstSym:
 
 	MOV	A,B	; Read next symbol if needed
 	ORA	A
-	CZ	GETCHR##
+	CZ	GETCHR
 	ani	11011111b	; toupper(Acc)
 	MOV	B,A
 	CMP	M

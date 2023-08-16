@@ -5,7 +5,10 @@
 
 ?Ctrl	equ	40h
 ?Shift	equ	20h
+
+IFNDEF	PPI_ADR
 EXTRN	PPI_ADR
+ENDIF
 
 ; Return SYMBOL and SHIFT/CNTRL flags
 ; 	40h - CNTRL  &  80h - SHIFT
@@ -15,32 +18,64 @@ GETCHC::
 	CALL	GETCHR
 	PUSH	H
 	push	psw
+	PUSH	D
 	ANI	3FH
 	MOV	C,A
 	LDA	@CTRL
+	MOV	E,A
 	;LDA	PPI+2
 	LHLD	PPI_ADR
 	INX	H
 	INX	H
-	ANA	M
-	PUSH	H ; PPI+2
+	CALL	_in
+	ANA	E
 	MOV	A,C
 	JNZ	$+5
 	ORI	40H
 	MOV	C,A
 
 	LDA	@SHFT
-	POP	H
-	ANA	M
+	MOV	E,A
+	CALL	_in
+	ANA	E
 	MOV	A,C
 	JNZ	$+5
 	ORI	80H
 	mov	b,a
+	POP	D
 	pop	psw
 	mov	c,a
 	POP	H
 	RET
 
+IFDEF	CPM
+BIOS_CONIN:
+	LHLD	1
+	LXI	D,6
+	DAD	D
+	INX	H
+	MOV	E,M
+	INX	H
+	MOV	D,M
+	XCHG
+	INX	H
+	MOV	E,M
+	INX	H
+	MOV	D,M
+	XCHG
+	PCHL
+
+GETCHR::
+	PUSH	H
+	PUSH	D
+	PUSH	B
+	CALL	BIOS_CONIN
+	POP	B
+	POP	D
+	POP	H
+	RET
+
+ELSE
 ; Get character from concole (returns in Acc)
 GETCHR::
 	PUSH	H
@@ -254,6 +289,9 @@ NORM0:	CALL	?PRESS
 	MOV	M,E
 	;STA	PPI
 	;LDA	PPI+1
+	NOP
+	NOP
+	NOP
 	INX	H
 	MOV	A,M
 	POP	H
@@ -290,12 +328,21 @@ GETMSK:	MOV	A,D
 FOUND:	PUSH	H
 	PUSH	D
 	PUSH	B
-	MOV	E,B
+	MOV	A,B
+	CPI	3FH
+	JNZ	FND01
+	MVI	A,20H
+	JMP	FND02
+FND01:	CPI	10H
+	JC	FND03
+	ADI	20H
+	JMP	FND02
+FND03:	MOV	E,B
 	MVI	D,0
 	LXI	H,KEYBRD
 	DAD	D
 	MOV	A,M
-	MOV	E,A
+FND02:	MOV	E,A
 
 	CPI	21H
 	CNC	MODCHR
@@ -380,6 +427,8 @@ SHIFT0:	;LDA	PPI+2
 	MOV	A,E
 	CPI	40H
 	RC
+	CPI	07Fh
+	RZ
 	ADI	20H
 	MOV	E,A
 	RET
@@ -396,6 +445,8 @@ SHIFT0:	;LDA	PPI+2
 SH3:	MOV	A,E
 	CPI	40H
 	JC	SH5
+	CPI	7Fh
+	rz
 	ADI	20H
 	JMP	SH1
 SH5:	MOV	A,E
@@ -404,28 +455,38 @@ SH5:	MOV	A,E
 SH1:	MOV	E,A
 	RET
 SB:	SUI	10H
-	JMP	SH1
+	CPI	20H
+	JNZ	SH1
+	MVI	E,5Fh
+	RET
 
 
 KEYBRD:	DB	0CH,1FH,1BH,0,1,2,3,4
-	DB	9,0AH,0DH,5FH,8,19H,18H,1AH
-	DB	'0123456789:;<=>?'
-	DB	'@ABCDEFGHIJKLMNO'
-	DB	'PQRSTUVWXYZ[\]^ '
+	DB	9,0AH,0DH
+	DB	7FH; Here was 5FH
+	DB	8,19H,18H,1AH
+; Following map part may be done more compact algoritmically
+; Decrease size by 27 bytes
+;	DB	'0123456789:;<=>?'
+;	DB	'@ABCDEFGHIJKLMNO'
+;	DB	'PQRSTUVWXYZ[\]^ '
 
 
 @RUS:	DB	80H
-@CTRL:	DB	?Ctrl
-@SHFT:	DB	?Shift
 @RD:	DB	0
 
 PNT:	DW	ET1
 ET1:	DB	0ffh
 	ds	9
-	DSEG
+	;DSEG
 NREP:	DS	1
 PRESS:	DS	10
 ET2:	DS	10
+ENDIF
+@CTRL:	DB	?Ctrl
+@SHFT:	DB	?Shift
+IFNDEF	noend
 	END
+ENDIF
 
 

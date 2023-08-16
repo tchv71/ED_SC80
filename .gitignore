@@ -1,4 +1,23 @@
-
 .DS_Store
 *.PRN
 *.REL
+L80
+M80
+ESC80.RK
+*.SYM
+*.BIN
+ED_SC80.layout
+/.codelite
+/.vs/ED_SC80/FileContentIndex
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite
+*.json
+/.vs/ED_SC80/v17
+/Debug/ED_SC80.log
+/EDSC80. EL
+/Debug/ED_SC80.vcxproj.AssemblyReference.cache
+*.log
+/_Rk60k
+/_Rk32k
+/_palmiraCPM
+/_palmira

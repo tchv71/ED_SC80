@@ -3,8 +3,29 @@
 ;	E0break.mac - time safe break check
 ;
 
-PPI	equ	0F780h
+;PPI	equ	0F780h
 
+IFDEF	CPM
+; Initialize break checking
+init_brk_check	macro
+		PUSH	H
+		MVI	A,0FEH
+		LHLD	PPI_ADR
+		CALL	_out
+		POP	H
+		endm
+
+; Check for break key pressed (Z=1)
+check_break	macro
+		;LDA	PPI+1
+		PUSH	H
+		LHLD	PPI_ADR
+		INR	L
+		CALL	_in
+		POP	H
+		ANI	40h
+		endm
+ELSE
 ; Initialize break checking
 init_brk_check	macro
 		PUSH	H
@@ -25,3 +46,4 @@ check_break	macro
 		POP	H
 		ANI	40h
 		endm
+ENDIF

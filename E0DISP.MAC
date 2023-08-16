@@ -1,26 +1,41 @@
+;IFNDEF	TabStep
 ;****************************************************
 ;    SC80 text screen editor    (C) TCHV,1989-93    *
-;						    *
+;                                                   *
 ;  E0DISP.MAC - Display dependent macro definitions *
+;                                                   *
+;          This file is for Original 32k version    *
 ;****************************************************
-
 TabStep		equ	8
-LimitedCharSet	equ	1
+;LimitedCharSet	equ	1
 
+IFDEF	CPM
 ScrXOffset	equ	0
-ScrYOffset	equ	3
-ScrWidth	equ	80
-ScrHeight	equ	24
+ScrYOffset	equ	2
+ScrWidth	equ	78
+ScrHeight	equ	25
 
-LogicWidth	equ	80
+
+; LogicWidth must be multiple of 4
+LogicWidth	equ	76 ; 78 - 8 trailing blank symbols - 5 end blank symbols
+LogicHeight	equ	ScrHeight
+
+ELSE
+ScrXOffset	equ	8
+ScrYOffset	equ	3
+ScrWidth	equ	78
+ScrHeight	equ	25
+
+LogicWidth	equ	64 ; 78 - 8 trailing blank symbols - 5 end blank symbols
 LogicHeight	equ	ScrHeight-2
 
-ScrSize		equ	(ScrHeight+ScrYOffset+2)*ScrWidth
-ScrStart	equ	0f000h-ScrSize
+ENDIF
+ScrSize		equ	(ScrHeight+5)*ScrWidth
+;ScrStart	equ	76D0h ; Display buffer start
 
-; Start address of physical screen
-VRAM		equ	ScrStart+ScrYOffset*ScrWidth+ScrXOffset
-
+; Start address of physical screen - visible characters
+ScrOffset	equ	ScrYOffset*ScrWidth+ScrXOffset
+;VRAM		equ	ScrStart+ScrOffset
 SetScrAddr	macro
 		endm
 
@@ -30,7 +45,13 @@ WriteNextSym	macro
 		endm
 
 space		equ	20h
-CURSOR_BLOCK	equ	0EDh
-CURSOR_LINE	equ	0DDh
+IFDEF	PALMIRA
+CURSOR_BLOCK	equ	0E8h-80h
+CURSOR_LINE	equ	0D8h-80h
+ELSE
+CURSOR_BLOCK	equ	0E3h
+CURSOR_LINE	equ	0D3h
+ENDIF
 
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+;ENDIF

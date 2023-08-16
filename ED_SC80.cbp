@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ED_SC80" />
+		<Option pch_mode="2" />
+		<Option compiler="null" />
+		<Build>
+			<Target title="Release">
+				<Option type="4" />
+				<Option compiler="null" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="E0BREAK.MAC" />
+		<Unit filename="E0CMDT.ASM" />
+		<Unit filename="E0DISP.ASM" />
+		<Unit filename="E0DISP.MAC" />
+		<Unit filename="E0FILEIO.ASM" />
+		<Unit filename="E0GETC.ASM" />
+		<Unit filename="E0MAIN.ASM" />
+		<Unit filename="HEADER.ASM" />
+		<Unit filename="Makefile" />
+		<Unit filename="RK86.MAC" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
