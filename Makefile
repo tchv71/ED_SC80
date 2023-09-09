@@ -81,5 +81,8 @@ bin/ESC80_32k.rk: _Rk32k EDSC803.BIN
 .REL.BIN:
 	$(M80PATH)/L80 /P:100,$<,$@/N/Y/E
 
+CPMPC.BIN: CPMPC.REL
+	$(M80PATH)/L80 /P:100,$<,$@/N/Y/E
+
 run: bin/ESC80_32k.rk
 	$(EMUPATH)/Emu80Qt bin/ESC80_palmira.rk
