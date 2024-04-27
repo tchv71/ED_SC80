@@ -16,7 +16,7 @@ SETSCR::
 	CALL	_out
 	DCX	H
 
-IFDEF	Palmira
+IFDEF	PALMIRA
 	MVI	A,ScrWidth-1
 	CALL	_out
 	MVI	A,(ScrHeight+5-1)+40H
@@ -48,10 +48,18 @@ SETS01:
 
 	;LXI	H,DMA+8
 	LHLD	DMA_ADR
+	PUSH	H
+	PUSH	B
+	LXI	B,0fh
+	DAD	B
+	POP	B
+	CALL	_in
+	POP	H
+	INR	A
+	JZ	VT37
 	PUSH	B
 	LXI	B,8
 	DAD	B
-	POP	B
 	MVI	A,80H
 	CALL	_out
 
@@ -61,7 +69,6 @@ SETS01:
 	DCR	L
 	DCR	L
 	DCR	L
-	PUSH	B
 	XCHG
 	LHLD	VRAM_ADR
 	LXI	B,-ScrOffset
@@ -71,7 +78,6 @@ SETS01:
 	CALL	_out
 	MOV	A,D
 	CALL	_out
-	POP	D
 	INX	H
 	MVI	A,Low(ScrSize-1)
 	CALL	_out
@@ -79,8 +85,56 @@ SETS01:
 	CALL	_out
 	;MVI	L,Low(DMA+8)
 	POP	H ; DMA+8
+	POP	B
 	MVI	A,0A4H
 	JMP	_out;RET
+VT37:
+	PUSH	B
+	MOV	C,L
+	MVI	A,0Dh
+	ADD	C
+	MOV	L,A
+	XRA	A
+	CALL	_out
+
+	MVI	A,4
+	ADD	C
+	MOV	L,A
+	XCHG
+	LHLD	VRAM_ADR
+	PUSH	B
+	LXI	B,-ScrOffset
+	DAD	B
+	POP	B
+	XCHG
+	MOV	A,E
+	CALL	_out
+	MOV	A,D
+	CALL	_out
+	INX	H
+	MVI	A,Low(ScrSize-1)
+	CALL	_out
+	MVI	A,High(ScrSize-1)
+	CALL	_out
+
+	MVI	A,0Bh
+	ADD	C
+	MOV	L,A
+	MVI	A,1Ah
+	CALL	_out
+
+	MVI	A,8
+	ADD	C
+	MOV	L,A
+	MVI	A,8
+	CALL	_out
+
+	MVI	A,0fh
+	ADD	C
+	MOV	L,A
+	MVI	A,0Bh
+	POP	B
+	JMP	_out;	RET
 
 	
 SetCursor::

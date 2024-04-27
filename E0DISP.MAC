@@ -12,17 +12,22 @@ TabStep		equ	8
 IFDEF	CPM
 ScrXOffset	equ	0
 ScrYOffset	equ	2
-ScrWidth	equ	78
+ScrWidth	equ	80
 ScrHeight	equ	25
 
 
 ; LogicWidth must be multiple of 4
-LogicWidth	equ	76 ; 78 - 8 trailing blank symbols - 5 end blank symbols
+LogicWidth	equ	80;76 ; 78 - 8 trailing blank symbols - 5 end blank symbols
 LogicHeight	equ	ScrHeight
 
 ELSE
-ScrXOffset	equ	8
-ScrYOffset	equ	3
+IFDEF PALMIRA
+	ScrXOffset	equ	4
+	ScrYOffset	equ	2
+ELSE
+	ScrXOffset	equ	8
+	ScrYOffset	equ	3
+ENDIF
 ScrWidth	equ	78
 ScrHeight	equ	25
 
@@ -46,8 +51,9 @@ WriteNextSym	macro
 
 space		equ	20h
 IFDEF	PALMIRA
-CURSOR_BLOCK	equ	0E8h-80h
-CURSOR_LINE	equ	0D8h-80h
+HRTC		equ	9;0Ah
+CURSOR_BLOCK	equ	0E0h-80h+HRTC
+CURSOR_LINE	equ	0D0h-80h+HRTC
 ELSE
 CURSOR_BLOCK	equ	0E3h
 CURSOR_LINE	equ	0D3h

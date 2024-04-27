@@ -1,3 +1,4 @@
 ; Platform selection
 ;RK60k	EQU	1
 PALMIRA EQU	1
+CPM	equ	1
