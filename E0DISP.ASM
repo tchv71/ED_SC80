@@ -8,6 +8,33 @@ EXTRN	DISP_ADR, DMA_ADR, VRAM_ADR
 ENDIF
 
 SETSCR::
+IFDEF VDP9918
+T_T80_VRAM_PATT_ADDRESS		EQU	2000h
+	MVI	A,80h
+SetupCursor:
+	PUSH	h
+	PUSH	B
+	CPI	80h
+	JZ	s_c16
+	LXI	H, T_T80_VRAM_PATT_ADDRESS + 255 * 8
+	CALL	T_SetAddrWriteHL
+	MVI	A, 255 - 3
+	MVI	B, 8
+	JMP	s_c01
+s_c16:
+	LXI	H, T_T80_VRAM_PATT_ADDRESS + 255 * 16;8
+	CALL	T_SetAddrWriteHL
+	MVI	A, 255 - 3
+	MVI	B, 16;8
+s_c01:	OUT	VDP
+	DCR	B
+	JNZ	s_c01
+	;XRA	A
+	;@OUT	DISP+1	; Stop displaying
+	POP	B
+	POP	H
+	RET
+ELSE
 	LHLD	DISP_ADR
 	INX	H
 	;MVI	M,0
@@ -135,9 +162,188 @@ VT37:
 	MVI	A,0Bh
 	POP	B
 	JMP	_out;	RET
+ENDIF
 
-	
+IFDEF VDP9918
+HideCursor:
+	LDA	SYMSAVED
+	ORA	A
+	RZ
+	PUSH	H
+	LHLD	CURADDR
+	CALL	T_SetAddrWriteHL
+	LDA	CURSYM
+	OUT	VDP
+	XRA	A
+	STA	SYMSAVED
+	POP	H
+	RET
+ENDIF
+
+; Set cursor -
+;	H - Y
+;	L - X
+; returns:
+;	A = H - 1
 SetCursor::
+IFDEF VDP9918
+	PUSH	H
+	PUSH	D
+	PUSH	B
+	XCHG
+	DCR	D
+	DCR	E
+	CALL	HideCursor
+sc03:
+	CALL	T_TextPos
+	CALL	T_SetAddrReadHL
+	IN	VDP
+	STA	CURSYM
+	SHLD	CURADDR
+	CPI	'2' ; No idea - when setting cursor on this symbol editor hangs
+	JZ	sc05
+	PUSH	H
+	MOV	L,A
+	MVI	H,0
+	DAD	H	; 2
+	DAD	H	; 4
+	DAD	H	; 8
+	DAD	H	; 16
+	LXI	D, T_T80_VRAM_PATT_ADDRESS
+	DAD	D
+	CALL	T_SetAddrReadHL
+	MVI	B, 16
+	LXI	H, SYMBUF
+	PUSH	H
+	CALL	T_ShortReadBytes
+	LXI	H, T_T80_VRAM_PATT_ADDRESS + 255 * 16
+	CALL	T_SetAddrWriteHL
+	POP	H
+	MVI	B, 16
+sc04:
+	MOV	A,M
+	XRI	255
+	OUT	VDP
+	INX	H
+	DCR	B
+	JNZ	sc04
+	POP	H
+	MVI	A,1
+	STA	SYMSAVED
+sc05:
+	CALL	T_SetAddrWriteHL
+	MVI	a,255
+	OUT	VDP
+	POP	B
+	POP	D
+	POP	H
+	MOV	A,H
+	ADI	ScrYOffset-1
+	RET
+
+SYMBUF:	DS	16
+
+;	HL - buffer address
+;	DE - VRAM address
+;	B  - number of bytes (1..256)
+T_ShAddrWriteBytesDE:
+	XCHG
+	CALL	T_SetAddrWriteHL
+	XCHG
+
+T_ShortWriteBytes:
+	MOV	A,M
+	OUT	VDP
+	INX	H
+	DCR	B
+	JNZ	T_ShortWriteBytes
+	RET
+
+T_ReadBytes:
+	IN	VDP
+	MOV	M,A
+	INX	H
+	DCX	D
+	MOV	A,D
+	ORA	E
+	JNZ	T_ReadBytes
+	RET
+
+;	HL - buffer address
+;	DE - VRAM address
+;	B  - number of bytes (1..256)
+T_ShAddrReadBytesDE:
+	XCHG
+	CALL	T_SetAddrReadHL
+	XCHG
+
+T_ShortReadBytes:
+	IN	VDP
+	MOV	M,A
+	INX	H
+	DCR	B
+	JNZ	T_ShortReadBytes
+	RET
+
+T_SetAddrWriteHL:
+	DI
+	MOV	A,L
+	OUT	VDP+1
+	MOV	A,H
+	ORI	40h
+	OUT	VDP+1
+	;EI
+	RET
+T_SetAddrReadHL:
+	DI
+	MOV	A,L
+	OUT	VDP+1
+	MOV	A,H
+	OUT	VDP+1
+	;EI
+	RET
+
+PRV_S:	PUSH	B
+	LXI	B,-ScrWidth
+	DAD	B
+	POP	B
+	RET
+
+NXT_S:	PUSH	B
+	LXI	B,ScrWidth
+	DAD	B
+	POP	B
+	RET
+; set the address to place text at X/Y coordinate
+;	E = X
+;	D = Y
+T_TextPos:
+	PUSH	D
+	;MOV	A,E
+	LDA	LPOS
+	ADD	E
+	MOV	E,D
+	MVI	D, 0
+	MOV	H,D
+	MOV	L,E
+	;DAD	D                       ; Y x 1
+	DAD	H                       ; Y x 2
+	DAD	H                       ; Y x 4
+	DAD	D                       ; Y x 5
+	DAD	H                       ; Y x 10
+	DAD	H                       ; Y x 20
+	DAD	H                       ; Y x 40
+	DAD	H                       ; Y x 80
+	MOV	E,A
+	DAD	D                       ; add X for final address
+	POP	D
+	;LXI	D, T_T80_VRAM_NAME_ADDRESS       ; add name table base address
+	;DAD	D
+	RET
+CURSYM:		DB	0
+SYMSAVED:	DB	0
+CURADDR:	DW	0
+ELSE
 	PUSH	D
 	MVI	A,80H
 	;STA	DISP+1
@@ -166,7 +372,7 @@ SetCursor::
 	CALL	_out
 	POP	D
 	RET
-
+ENDIF
 
 LPOS:	DB	0
 ;RK_END

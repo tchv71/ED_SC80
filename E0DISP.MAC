@@ -10,6 +10,18 @@ TabStep		equ	8
 ;LimitedCharSet	equ	1
 
 IFDEF	CPM
+IFDEF VDP9918
+VDP		equ	98h
+ScrXOffset	equ	0
+ScrYOffset	equ	0
+ScrWidth	equ	80
+ScrHeight	equ	24
+
+; LogicWidth must be multiple of 4
+LogicWidth	equ	ScrWidth
+LogicHeight	equ	ScrHeight-2
+ENDSCR		equ	ScrWidth * ScrHeight
+ELSE
 ScrXOffset	equ	0
 ScrYOffset	equ	2
 ScrWidth	equ	80
@@ -19,7 +31,7 @@ ScrHeight	equ	25
 ; LogicWidth must be multiple of 4
 LogicWidth	equ	80;76 ; 78 - 8 trailing blank symbols - 5 end blank symbols
 LogicHeight	equ	ScrHeight
-
+ENDIF
 ELSE
 IFDEF PALMIRA
 	ScrXOffset	equ	4
@@ -35,6 +47,28 @@ LogicWidth	equ	64 ; 78 - 8 trailing blank symbols - 5 end blank symbols
 LogicHeight	equ	ScrHeight-2
 
 ENDIF
+IFDEF VDP9918
+ScrSize		equ	ScrHeight*ScrWidth
+
+; Start address of physical screen - visible characters
+ScrOffset	equ	ScrYOffset*ScrWidth+ScrXOffset
+SetScrAddr	macro
+		push	psw
+		mov	a,l
+		di
+		out	VDP+1
+		mov	a, h
+		ori	40h
+		;ei
+		out	VDP+1
+		pop	psw
+		endm
+
+WriteNextSym	macro
+		out	VDP
+		inx	h
+		endm
+ELSE
 ScrSize		equ	(ScrHeight+5)*ScrWidth
 ;ScrStart	equ	76D0h ; Display buffer start
 
@@ -48,7 +82,7 @@ WriteNextSym	macro
 		mov	m,a
 		inx	h
 		endm
-
+ENDIF
 space		equ	20h
 IFDEF	PALMIRA
 HRTC		equ	9;0Ah

@@ -149,7 +149,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CPM|Win32'">
-    <NMakeBuildCommandLine>make bin/ESC80_CPM.rkl</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>make bin/E_CPM.rkl</NMakeBuildCommandLine>
     <NMakeOutput>EDSC80PC.BIN</NMakeOutput>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
