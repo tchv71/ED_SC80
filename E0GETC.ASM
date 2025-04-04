@@ -19,8 +19,42 @@ GETCHC::
 	PUSH	H
 	push	psw
 	PUSH	D
+IFNDEF	MSX
 	ANI	3FH
+ENDIF
 	MOV	C,A
+IFDEF	MSX
+	;LDA	@CTRL
+	;MOV	E,A
+	MVI	E, 2
+	;LDA	PPI+2
+	LHLD	PPI_ADR
+	INX	H
+	INX	H
+	CALL	_in
+	ANI	0F0h
+	ORI	6
+	CALL	_out
+	DCX	H
+	CALL	_in
+	MOV	D, A
+	ANA	E
+	MOV	A,C
+	JNZ	$+5
+	ORI	40H
+	MOV	C,A
+
+	;LDA	@SHFT
+	;MOV	E,A
+	MVI	E,1
+	;CALL	_in
+	MOV	A, D
+	ANA	E
+	MOV	A,C
+	JNZ	$+5
+	ORI	80H
+	mov	b,a
+ELSE
 	LDA	@CTRL
 	MOV	E,A
 	;LDA	PPI+2
@@ -42,6 +76,7 @@ GETCHC::
 	JNZ	$+5
 	ORI	80H
 	mov	b,a
+ENDIF
 	POP	D
 	pop	psw
 	mov	c,a
@@ -50,6 +85,10 @@ GETCHC::
 
 IFDEF	CPM
 BIOS_CONIN:
+IFDEF MSX
+	MVI	C,7
+	JMP	5
+ENDIF
 	LHLD	1
 	LXI	D,6
 	DAD	D

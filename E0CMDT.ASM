@@ -10,6 +10,15 @@ PUBLIC	FNDCMD
 EXTRN INFADR
 ENDIF
 
+IFDEF MSX
+@Left		equ	1Dh
+@Right		equ	1Ch
+@Up		equ	1Eh
+@Down		equ	1Fh
+@Str		equ	0Bh
+Shift		equ	80h
+Cntrl		equ	40h
+ELSE
 @Left		equ	8h
 @Right		equ	18h
 @Up		equ	19h
@@ -17,6 +26,7 @@ ENDIF
 @Str		equ	31
 Shift		equ	80h
 Cntrl		equ	40h
+ENDIF
 
 
 CMD	MACRO	Adr1,Key1,Adr2,Key2
@@ -41,7 +51,11 @@ CMDTBL::
 	DW	0
 
 	CMD	INSCTRL,0
+IFDEF MSX
+	CMD	LDEL,	8,		RDEL,	127
+ELSE
 	CMD	LDEL,	3Fh,		RDEL,	3
+ENDIF
 	CMD	TAB,	9,		BSC,	12
 	CMD	CR,	13,		REST,	27
 	CMD	DELLT,	Cntrl+1,	DELRT,	Cntrl+3
