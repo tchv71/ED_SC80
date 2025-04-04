@@ -70,6 +70,9 @@ T_WHITE			EQU	15
 
 
 T_InitialiseText80:
+IFNDEF	MsX
+	RET
+ELSE
 	;CALL	T_Reset
 	MVI	A,0
 	PUSH	PSW
@@ -158,6 +161,7 @@ T_WriteBytes:
 
 
 FONTFILNAM:	DB	'font6x8.bin',0
+ENDIF
 ELSE
 	LHLD	DISP_ADR
 	INX	H
@@ -331,7 +335,7 @@ IFDEF VDP9918
 	IN	VDP
 	STA	CURSYM
 	SHLD	CURADDR
-	;CPI	'2' ; No idea - when setting cursor on this symbol editor hangs
+	;CPI	'2' ; No idea - when setting cursor on this symbol editor hangs - fixed by waiting for frame interrupt
 	;JZ	sc05
 	;CPI	'0'
 	;JZ	sc05
@@ -361,6 +365,9 @@ IFDEF VDP9918
 	LXI	H, T_T80_VRAM_PATT_ADDRESS + CursorSymbol * 16
 	CALL	T_SetAddrWriteHL
 	  POP	H
+	IN	VDP+1
+	ANI	80H
+	JNZ	$-4
 	MOV	B,C
 	LDA	MODE
 	CPI	0B3h
