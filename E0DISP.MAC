@@ -17,10 +17,9 @@ ScrYOffset	equ	0
 ScrWidth	equ	80
 ScrHeight	equ	24
 
-; LogicWidth must be multiple of 4
 LogicWidth	equ	ScrWidth
 LogicHeight	equ	ScrHeight-2
-ENDSCR		equ	ScrWidth * ScrHeight
+CursorSymbol	equ	255
 ELSE
 ScrXOffset	equ	0
 ScrYOffset	equ	2

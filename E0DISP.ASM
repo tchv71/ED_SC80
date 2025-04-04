@@ -10,29 +10,6 @@ ENDIF
 SETSCR::
 IFDEF VDP9918
 T_T80_VRAM_PATT_ADDRESS		EQU	2000h
-	MVI	A,80h
-SetupCursor:
-	PUSH	h
-	PUSH	B
-	CPI	80h
-	JZ	s_c16
-	LXI	H, T_T80_VRAM_PATT_ADDRESS + 255 * 8
-	CALL	T_SetAddrWriteHL
-	MVI	A, 255 - 3
-	MVI	B, 8
-	JMP	s_c01
-s_c16:
-	LXI	H, T_T80_VRAM_PATT_ADDRESS + 255 * 16;8
-	CALL	T_SetAddrWriteHL
-	MVI	A, 255 - 3
-	MVI	B, 16;8
-s_c01:	OUT	VDP
-	DCR	B
-	JNZ	s_c01
-	;XRA	A
-	;@OUT	DISP+1	; Stop displaying
-	POP	B
-	POP	H
 	RET
 ELSE
 	LHLD	DISP_ADR
@@ -171,9 +148,14 @@ HideCursor:
 	RZ
 	PUSH	H
 	LHLD	CURADDR
+	CALL	T_SetAddrReadHL
+	IN	VDP
+	CPI	CursorSymbol
+	JNZ	hc01
 	CALL	T_SetAddrWriteHL
 	LDA	CURSYM
 	OUT	VDP
+hc01:
 	XRA	A
 	STA	SYMSAVED
 	POP	H
@@ -194,15 +176,18 @@ IFDEF VDP9918
 	DCR	D
 	DCR	E
 	CALL	HideCursor
-sc03:
+	MVI	A,1
+	STA	SYMSAVED
 	CALL	T_TextPos
 	CALL	T_SetAddrReadHL
 	IN	VDP
 	STA	CURSYM
 	SHLD	CURADDR
-	CPI	'2' ; No idea - when setting cursor on this symbol editor hangs
-	JZ	sc05
-	PUSH	H
+	;CPI	'2' ; No idea - when setting cursor on this symbol editor hangs
+	;JZ	sc05
+	;CPI	'0'
+	;JZ	sc05
+	 PUSH	H
 	MOV	L,A
 	MVI	H,0
 	DAD	H	; 2
@@ -214,25 +199,40 @@ sc03:
 	CALL	T_SetAddrReadHL
 	MVI	B, 16
 	LXI	H, SYMBUF
-	PUSH	H
+	  PUSH	H
 	CALL	T_ShortReadBytes
-	LXI	H, T_T80_VRAM_PATT_ADDRESS + 255 * 16
+
+	LXI	H, T_T80_VRAM_PATT_ADDRESS + CursorSymbol * 16
 	CALL	T_SetAddrWriteHL
-	POP	H
+	  POP	H
 	MVI	B, 16
+	LDA	MODE
+	CPI	0B3h
+	JNZ	sc07
 sc04:
+	MOV	A,B
+	CPI	6 + 1
 	MOV	A,M
-	XRI	255
+	JNC	sc06
+	CMA
+sc06:	
 	OUT	VDP
 	INX	H
 	DCR	B
 	JNZ	sc04
-	POP	H
-	MVI	A,1
-	STA	SYMSAVED
+	JMP	sc01
+sc07:
+	MOV	A,M
+	CMA
+	OUT	VDP
+	INX	H
+	DCR	B
+	JNZ	sc07
+sc01:
+	 POP	H
 sc05:
 	CALL	T_SetAddrWriteHL
-	MVI	a,255
+	MVI	a, CursorSymbol
 	OUT	VDP
 	POP	B
 	POP	D
@@ -241,7 +241,7 @@ sc05:
 	ADI	ScrYOffset-1
 	RET
 
-SYMBUF:	DS	16
+SYMBUF	EQU	STRBUF
 
 ;	HL - buffer address
 ;	DE - VRAM address
