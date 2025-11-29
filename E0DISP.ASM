@@ -12,6 +12,8 @@ IFDEF VDP9918
 T_T80_VRAM_COLOR_ADDRESS	EQU	0A00h
 T_T80_VRAM_NAME_ADDRESS		EQU	0000h
 T_T80_VRAM_PATT_ADDRESS		EQU	2000h
+T_T80_VRAM_ATTR_ADDRESS		EQU	3000h
+
 T_REG_0			EQU	0
 T_REG_1			EQU	1
 T_REG_2			EQU	2
@@ -299,6 +301,7 @@ HideCursor:
 	RZ
 	PUSH	H
 	LHLD	CURADDR
+IFDEF MSX
 	CALL	T_SetAddrReadHL
 	IN	VDP
 	CPI	CursorSymbol
@@ -307,9 +310,25 @@ HideCursor:
 	LDA	CURSYM
 	OUT	VDP
 hc01:
+ELSE
+	LDA	CURATR
+	CALL	AddAttr
+	CALL	T_SetAddrWriteHL
+	LDA	CURATR
+	OUT	VDP
+ENDIF
 	XRA	A
 	STA	SYMSAVED
 	POP	H
+	RET
+ENDIF
+
+IFNDEF MSX
+AddAttr:
+	PUSH	B
+	LXI	B, T_T80_VRAM_ATTR_ADDRESS
+	DAD	B
+	POP	B
 	RET
 ENDIF
 
@@ -335,10 +354,23 @@ ENDIF
 	MVI	A,1
 	STA	SYMSAVED
 	CALL	T_TextPos
+IFDEF	MSX
 	CALL	T_SetAddrReadHL
 	IN	VDP
 	STA	CURSYM
+ELSE
+	PUSH	H
+	CALL	AddAttr
+	CALL	T_SetAddrReadHL
+	POP	H
+	IN	VDP
+	STA	CURATR
+	CALL	T_SetAddrWriteHL
+	LDA	SCRATTR
+	OUT	VDP
+ENDIF
 	SHLD	CURADDR
+IFDEF	MSX
 	;CPI	'2' ; No idea - when setting cursor on this symbol editor hangs - fixed by waiting for frame interrupt
 	;JZ	sc05
 	;CPI	'0'
@@ -360,14 +392,14 @@ ENDIF
 	MOV	B,C
 	LXI	H, SYMBUF
 	  PUSH	H
-	CALL	T_ShortReadBytes
+		CALL	T_ShortReadBytes
 
-	MVI	A,8
-	CMP	C
-	LXI	H, T_T80_VRAM_PATT_ADDRESS + CursorSymbol * 8
-	JZ	$+6
-	LXI	H, T_T80_VRAM_PATT_ADDRESS + CursorSymbol * 16
-	CALL	T_SetAddrWriteHL
+		MVI	A,8
+		CMP	C
+		LXI	H, T_T80_VRAM_PATT_ADDRESS + CursorSymbol * 8
+		JZ	$+6
+		LXI	H, T_T80_VRAM_PATT_ADDRESS + CursorSymbol * 16
+		CALL	T_SetAddrWriteHL
 	  POP	H
 	IN	VDP+1
 	ANI	80H
@@ -415,6 +447,7 @@ sc05:
 	CALL	T_SetAddrWriteHL
 	MVI	a, CursorSymbol
 	OUT	VDP
+ENDIF
 	POP	B
 	POP	D
 	POP	H
@@ -457,13 +490,17 @@ T_ShAddrReadBytesDE:
 	XCHG
 	CALL	T_SetAddrReadHL
 	XCHG
-
 T_ShortReadBytes:
+	PUSH	H
+	PUSH	B
+T_ShortRB01:
 	IN	VDP
 	MOV	M,A
 	INX	H
 	DCR	B
-	JNZ	T_ShortReadBytes
+	JNZ	T_ShortRB01
+	POP	B
+	POP	H
 	RET
 
 T_SetAddrWriteHL:
@@ -522,6 +559,7 @@ T_TextPos:
 	;DAD	D
 	RET
 CURSYM:		DB	0
+CURATR:		DB	0F4h
 SYMSAVED:	DB	0
 CURADDR:	DW	0
 ELSE

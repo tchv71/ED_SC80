@@ -15,8 +15,11 @@ VDP		equ	98h
 ScrXOffset	equ	0
 ScrYOffset	equ	0
 ScrWidth	equ	80
+IFDEF MSX
 ScrHeight	equ	24
-
+ELSE
+ScrHeight	equ	30;24
+ENDIF
 LogicWidth	equ	ScrWidth
 LogicHeight	equ	ScrHeight-2
 CursorSymbol	equ	255
@@ -66,6 +69,12 @@ SetScrAddr	macro
 WriteNextSym	macro
 		out	VDP
 		inx	h
+IFNDEF MSX
+		push	psw
+		lda	ScrAttr
+		out	VDP
+		pop	psw
+ENDIF
 		endm
 ELSE
 ScrSize		equ	(ScrHeight+5)*ScrWidth
