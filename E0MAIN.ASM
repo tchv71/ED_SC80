@@ -734,7 +734,7 @@ STRBUF:	DS	ScrWidth
 ELSE
 STRBUF:	DS	ScrWidth*2
 ScrAttr:
-	DB	0F4h
+	DB	04Fh
 ENDIF
 ELSE
 	LXI	H,0
