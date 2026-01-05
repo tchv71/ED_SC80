@@ -6,19 +6,19 @@ PORT=COM3
 .SUFFIXES: .ASM .REL .BIN
 
 .ASM.REL:
-	$(M80PATH)/M80 '$@=$< /I/L'
+	$(M80PATH)/M80 '$@,EDSC80.PRN=$< /I/L'
 
 EDSC803.REL: $(ASMDEP)
-	$(M80PATH)/M80 '$@=$< /I/L'
+	$(M80PATH)/M80 '$@,EDSC80.PRN=$< /I/L'
 
 EDSC806.REL: $(ASMDEP)
-	$(M80PATH)/M80 '$@=$< /I/L'
+	$(M80PATH)/M80 '$@,EDSC80.PRN=$< /I/L'
 
 EDSC80P.REL: $(ASMDEP)
-	$(M80PATH)/M80 '$@=$< /I/L'
+	$(M80PATH)/M80 '$@,EDSC80.PRN=$< /I/L'
 
 EDSC80PC.REL: $(ASMDEP)
-	$(M80PATH)/M80 '$@=$< /I/L'
+	$(M80PATH)/M80 '$@,EDSC80.PRN=$< /I/L'
 
 clean:
 	del *.REL
