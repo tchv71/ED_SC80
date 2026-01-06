@@ -68,6 +68,7 @@ _Rk32k: RkConfig32k.mac
 
 bin/E_CPM.rkl: _palmiraCPM EDSC80PC.BIN
 	../makerk/Release/makerk.exe 100 EDSC80PC.BIN $@
+	../m80noi/x64/Release/m80noi.exe EDSC80.prn
 	copy /b EDSC80PC.BIN bin\e3.com
 
 bin/ESC80_palmira.rkl: _palmira EDSC80P.BIN

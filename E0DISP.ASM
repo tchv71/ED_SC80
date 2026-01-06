@@ -72,9 +72,10 @@ T_WHITE			EQU	15
 
 
 T_InitialiseText80:
-IFNDEF	MsX
+IFNDEF	VDP9918
 	RET
 ELSE
+	RET
 	;CALL	T_Reset
 	MVI	A,0
 	PUSH	PSW

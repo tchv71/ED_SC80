@@ -724,7 +724,7 @@ IFDEF	VDP9918
 	CALL	HideCursor
 	;LXI	H, ScrWidth * (LogicHeight -1)
 	LHLD	INFADR
-	LXI	D,LogicWidth-3*ScrWidth-1
+	LXI	D, -2*ScrWidth
 	DAD	D
 
 	;MVI	C, LogicHeight - 1
@@ -1849,6 +1849,7 @@ Ins_Sym:
 	INR	A
 	STA	CURX
 	ldax	d
+	SetScrAddr
 	WriteNextSym
 	inx	d
 	jmp	move_curs
