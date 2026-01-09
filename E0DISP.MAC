@@ -68,13 +68,29 @@ SetScrAddr	macro
 
 WriteNextSym	macro
 		out	VDP
-		inx	h
 IFNDEF MSX
+IF 0
 		push	psw
+IFNDEF VDP_IN“≈RLEAVE_COLOR
+		push	h
+		mov	a, l
+		out	VDP+1
+		mov	a, h
+		adi	30h
+		ori	40h
+		out	VDP+1
+		pop	h
+ENDIF
 		lda	ScrAttr
+		rlc
+		rlc
+		rlc
+		rlc
 		out	VDP
 		pop	psw
 ENDIF
+ENDIF
+		inx	h
 		endm
 ELSE
 ScrSize		equ	(ScrHeight+5)*ScrWidth

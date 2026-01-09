@@ -1,5 +1,6 @@
-	.PHASE 100h
+	;.PHASE 100h
 	CSEG
+	;ORG 104h
 noend	equ	1
 include RkConfig.mac
 include	RK86.MAC
