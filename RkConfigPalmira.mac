@@ -1,3 +1,6 @@
 ; Platform selection
 ;RK60k	EQU	1
 PALMIRA EQU	1
+VDP9918	equ	1
+;MSX	equ	1
+VDP_TEXT_SCROLL	EQU	1

@@ -4,6 +4,7 @@
     <LocalDebuggerCommand>"C:\Program Files (x86)\GnuWin32\bin\make.exe"</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments>send</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArgumentsHistory>send|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='All|Win32'">
     <LocalDebuggerCommand>"C:\Program Files (x86)\GnuWin32\bin\make.exe"</LocalDebuggerCommand>

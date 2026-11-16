@@ -111,6 +111,7 @@ ENDIF
 	JZ	font16
 
 
+IFDEF CPM
 	LXI	H,FONTFILNAM
 	LXI	D,FCB
 	CALL	GTFNAM
@@ -119,7 +120,7 @@ ENDIF
 	PUSH	H
 	CALL	RDBOD
 	POP	H
-
+ENDIF
 	;LXI	H, tmsFont8
 	LXI	D, 2048;tmsFont8End - tmsFont8
 	CALL	T_WriteBytes

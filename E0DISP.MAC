@@ -35,6 +35,19 @@ LogicWidth	equ	80;76 ; 78 - 8 trailing blank symbols - 5 end blank symbols
 LogicHeight	equ	ScrHeight
 ENDIF
 ELSE
+IFDEF VDP9918
+VDP		equ	98h
+ScrXOffset	equ	0
+ScrYOffset	equ	0
+ScrWidth	equ	80
+IFDEF MSX
+ScrHeight	equ	24
+ELSE
+ScrHeight	equ	30;24
+ENDIF
+LogicWidth	equ	80
+LogicHeight	equ	ScrHeight-2
+ELSE
 IFDEF PALMIRA
 	ScrXOffset	equ	4
 	ScrYOffset	equ	2
@@ -48,6 +61,7 @@ ScrHeight	equ	25
 LogicWidth	equ	64 ; 78 - 8 trailing blank symbols - 5 end blank symbols
 LogicHeight	equ	ScrHeight-2
 
+ENDIF
 ENDIF
 IFDEF VDP9918
 ScrSize		equ	ScrHeight*ScrWidth
