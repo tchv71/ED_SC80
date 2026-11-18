@@ -78,6 +78,7 @@ T_InitialiseText80:
 IFNDEF	VDP9918
 	RET
 ELSE
+	call	LoadFont
 	RET
 	;CALL	T_Reset
 	MVI	A,0
@@ -112,6 +113,7 @@ ENDIF
 
 
 IFDEF CPM
+IFNDEF SHELL
 	LXI	H,FONTFILNAM
 	LXI	D,FCB
 	CALL	GTFNAM
@@ -120,6 +122,7 @@ IFDEF CPM
 	PUSH	H
 	CALL	RDBOD
 	POP	H
+ENDIF
 ENDIF
 	;LXI	H, tmsFont8
 	LXI	D, 2048;tmsFont8End - tmsFont8
@@ -133,6 +136,7 @@ font16:
 	;LXI	H, tmsFont
 	;LXI	D, tmsFontEnd - tmsFont ; tmsFontBytes
 	;CALL	T_WriteBytes
+	call	LoadFont
 
 	LXI	B, (T_REG_0 SHL 8) OR T_R0_EXT_VDP_DISABLE OR T_R0_MODE_TEXT80 OR T_R0_MODE_TEXT8_80
 	CALL	T_WriteRegValue
@@ -565,12 +569,12 @@ T_TextPos:
 	;LXI	D, T_T80_VRAM_NAME_ADDRESS       ; add name table base address
 	;DAD	D
 	RET
-	DSEG
+	;DSEG
 CURSYM:		DB	0
 CURATR:		DB	04Fh
 SYMSAVED:	DB	0
 CURADDR:	DW	0
-	CSEG
+	;CSEG
 ELSE
 	PUSH	D
 	MVI	A,80H

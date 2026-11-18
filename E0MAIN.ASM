@@ -21,7 +21,7 @@ PUBLIC	INFADR
 
 .8080
 	CSEG
-	;ORG 104H
+	.phase 100h;ORG 103H
 
 StkSize	EQU	30h
 
@@ -55,10 +55,17 @@ PUBLIC	VRAM_ADR,PPI_ADR,DISP_ADR,DMA_ADR
 IFDEF	PALMIRA
 IFDEF	CPM
 	VRAM_ADR:	DW 0;0EEd0h+800h+ScrOffset	; VRAM buffer visible start address - 0F7C2h
+IFNDEF SHELL
 	PPI_ADR:	DW 0A8h		; VV55 keyboard Controller -	00h
 	PPI2_ADR:	DW 10h		; VV55 additional PPI -		10h
 	DISP_ADR:	DW 20H		; VG75 Display Controller -	20h
 	DMA_ADR:	DW 30h		; VT57 DMA Controller -		30h
+ELSE
+	PPI_ADR:	DW 0C200h 	; VV55 keyboard Controller - 0C200h
+	PPI2_ADR:	DW 0C400h	; VV55 additional PPI  - 0C400h
+	DISP_ADR:	DW 0C000h	; VG75 Display Controller - 0C000h
+	DMA_ADR:	DW 0E000h	; VT57 DMA Controller - 0E000h
+ENDIF
 ELSE
 	VRAM_ADR:	DW 0B770h	; VRAM buffer visible start address - 0B7C2h
 	PPI_ADR:	DW 0C200h 	; VV55 keyboard Controller - 0C200h
@@ -84,7 +91,15 @@ ENDIF
 		DW 0,0,0,0 ; Reserved for future use
 IFDEF	CPM
 GETMAXMEM:
+IFNDEF SHELL
 	LHLD	6
+ELSE
+	CALL	0F830h
+	push	b
+	lxi	b,-511
+	dad	b
+	pop	b
+ENDIF
 	RET
 
 BIOS_CONFIG:
@@ -105,10 +120,20 @@ BIOS_CONFIG:
 ENDIF
 
 START_COLD:
+IFDEF SHELL
+	xchg
+	shld	fs_selfName
+	xchg
+	shld	fs_cmdLine
+	mov	h,b
+	mov	l,c
+	shld	fs+1
+ENDIF
 IFDEF	CPM
+IFNDEF	SHELL
 	LXI	D,VRAM_ADR
 	CALL	BIOS_CONFIG
-
+ENDIF
 	;LXI	H,8000h
 	;SHLD	VRAM_ADR
 ENDIF
@@ -131,7 +156,9 @@ S001:	MOV	A,E
 
 START::
 	CALL	GETMAXMEM;lhld	6
-	sphl
+	shld	RamTop
+	;sphl
+	lxi	sp,100h
 	MVI	A,1
 	STA	DISPOS
 	STA	DISPS0
@@ -156,13 +183,19 @@ START::
 	SHLD	werhgr
 	XCHG
 IFDEF	CPM
+IFNDEF	SHELL
 	LXI	H,BUFF+1
+ELSE
+	lhld	fs_cmdLine
+ENDIF
 	MOV	A,M
 	ORA	A
 	JZ	NOFILE
 	PUSH	D
+IFNDEF	SHELL
 	LXI	D,FCB
 	CALL	GTFNAM
+ENDIF
 	LHLD	nivgr
 	CALL	RDBOD
 	LHLD	nivgr
@@ -201,6 +234,15 @@ M00:	LHLD	nivgr
 	POP	H
 	CALL	CURSM
 	JMP	M03
+
+fs:
+	jmp	0f800h
+
+IFDEF SHELL
+fs_cmdLine:	DS	2
+fs_selfName:	DS	2
+RamTop:		DS	2
+ENDIF
 
 SETINF:	CALL	DRLIN
 	LHLD	STRADR
@@ -3147,9 +3189,21 @@ NOCR2:	POP	PSW
 
 EXIT::	call	CLS
 IFDEF	CPM
+IFNDEF SHELL
 	MVI	A,0C3h
 	STA	0
 	JMP	0
+ELSE
+	call	0FACEh
+	lxi	h, ShPath
+	lxi	d, cmdStr
+	xra	a ; FS_EXEC
+	jmp	fs
+ShPath:
+	DB	"BOOT/SHELL.RK",0
+cmdStr:	Db	0
+
+ENDIF
 ELSE
 	JMP	0F800h;rst	0
 ENDIF

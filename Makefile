@@ -48,6 +48,16 @@ _palmiraCPM: RkConfigPalmiraCPM.mac
 	copy /b RkConfigPalmira.mac +,,
 	copy /b RkConfig32k.mac +,,
 
+_palmiraShell: RkConfigPalmiraShell.mac
+	copy /y RkConfigPalmiraShell.mac RkConfig.mac
+	copy /y RkConfigPalmiraShell.mac _palmiraShell
+# touch equivalent
+	copy /b RkConfig.mac +,,
+	copy /b RkConfig60k.mac +,,
+	copy /b RkConfigPalmira.mac +,,
+	copy /b RkConfigPalmiraCPM.mac +,,
+	copy /b RkConfig32k.mac +,,
+
 _Rk60k: RkConfig60k.mac
 	copy /y RkConfig60k.mac RkConfig.mac
 	copy /y RkConfig60k.mac _Rk60k
@@ -70,6 +80,11 @@ bin/E_CPM.rkl: _palmiraCPM EDSC80PC.BIN
 	../makerk/Release/makerk.exe 100 EDSC80PC.BIN $@
 	../m80noi/x64/Release/m80noi.exe EDSC80.prn
 	copy /b EDSC80PC.BIN bin\e3.com
+
+bin/EDM.rk: _palmiraShell EDSC80PC.BIN
+	../makerk/Release/makerk.exe 100 EDSC80PC.BIN $@ 1B45
+	../m80noi/x64/Release/m80noi.exe EDSC80.prn
+#	copy /b EDSC80PC.BIN bin\edm.com
 
 bin/ESC80_palmira.rkl: _palmira EDSC80P.BIN
 	../makerk/Release/makerk.exe 100 EDSC80P.BIN $@

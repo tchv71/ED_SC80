@@ -84,6 +84,7 @@ ENDIF
 	RET
 
 IFDEF	CPM
+IFNDEF SHELL
 BIOS_CONIN:
 IFDEF MSX
 	MVI	C,7
@@ -113,7 +114,10 @@ GETCHR::
 	POP	D
 	POP	H
 	RET
-
+ELSE
+GETCHR:
+	JMP	0F803h
+ENDIF
 ELSE
 ; Get character from concole (returns in Acc)
 GETCHR::

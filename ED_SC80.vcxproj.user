@@ -6,6 +6,12 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArgumentsHistory>send|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shell|Win32'">
+    <LocalDebuggerCommand>"C:\Program Files (x86)\GnuWin32\bin\make.exe"</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>send</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArgumentsHistory>send|</LocalDebuggerCommandArgumentsHistory>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='All|Win32'">
     <LocalDebuggerCommand>"C:\Program Files (x86)\GnuWin32\bin\make.exe"</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments>send</LocalDebuggerCommandArguments>
@@ -15,11 +21,13 @@
     <LocalDebuggerCommand>make</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments>send</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArgumentsHistory>send|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RK60K|Win32'">
     <LocalDebuggerCommand>make</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments>send</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArgumentsHistory>send|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RK32K|Win32'">
     <LocalDebuggerCommand>make</LocalDebuggerCommand>

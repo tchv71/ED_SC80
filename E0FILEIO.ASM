@@ -153,14 +153,15 @@ RD20:	CALL	INFPR
 	DW	33
 	DC	'FILE:'
 	LXI	H,FILNAM
+IFNDEF SHELL
 	LXI	D,FCB
 	CALL	GTFNAM
 	LXI	D,BUFF
-	MVI	C,1AH
+	MVI	C,1AH	; SET DMA
 	CALL	5
 	LXI	D,FCB
-	MVI	C,11H
-	CALL	5	; SEARCH FIRST
+	MVI	C,11H	; SEARCH FIRST
+	CALL	5
 	INR	A
 	RZ
 	LXI	H,BUFF
@@ -170,13 +171,21 @@ DSP0:	DCR	A
 	DAD	B
 	JMP	DSP0
 DSP1:	XCHG
-	PUSH	D
+	INX	D
+ELSE
+	lxi	h, BUFF
+	PUSH	H
+	lxi	d, 1
+	mvi	a, FS_FIND
+	call	fs
+	ora	a
+	POP	D
+	RNZ
+ENDIF
 	;LXI	H,INFSTR+38
 	CALL	GETINFADR
 	LXI	B,38
 	DAD	B
-	POP	D
-	INX	D
 	MVI	B,8
 	CALL	DSH00
 	MVI	A,'.'
@@ -193,6 +202,7 @@ DSH00:	LDAX	D
 	INR	A
 	RET
 
+IFNDEF SHELL
 GTFNAM:	MOV	A,M
 	CPI	20H
 	JNZ	GTN99
@@ -253,15 +263,7 @@ GTN1:	MOV	A,B
 	STAX	D
 	INX	D
 	JMP	$-4
-
-
-RDBOD:	PUSH	H	; READ FILE FROM DISK
-	LXI	D,FCB
-	MVI	C,0FH	; OPEN FILE
-	CALL	5
-	INR	A
-	POP	H
-	JNZ	DS00
+ENDIF
 
 ERR1:	CALL	CLRSTR
 	CALL	INFPR
@@ -272,14 +274,41 @@ ERR1:	CALL	CLRSTR
 	SHLD	BUFF
 	JMP	START_COLD
 
+FileTooBig:
+	CALL	CLRSTR
+	CALL	INFPR
+	DW	39
+	DB	'FILE TOO BIG',80H
+	CALL	GETCHR
+	LXI	H,0
+	SHLD	BUFF
+	JMP	START_COLD
 
-DS00:
+ErrFileRead:
+	CALL	CLRSTR
+	CALL	INFPR
+	DW	39
+	DB	'FILE READ ERROR',80H
+	CALL	GETCHR
+	LXI	H,0
+	SHLD	BUFF
+	JMP	START_COLD
+
+RDBOD:
+IFNDEF SHELL
+	PUSH	H	; READ FILE FROM DISK
+	LXI	D,FCB
+	MVI	C,0FH	; OPEN FILE
+	CALL	5
+	INR	A
+	POP	H
+	JZ	ERR1
 RDLOOP:	PUSH	H
 	XCHG
-	MVI	C,1AH
+	MVI	C,1AH	; SET DMA
 	CALL	5
 	LXI	D,FCB
-	MVI	C,14H
+	MVI	C,14H	; Read Sequential
 	CALL	5
 	POP	H
 	LXI	D,128
@@ -288,12 +317,98 @@ RDLOOP:	PUSH	H
 	JZ	RDLOOP
 ; pokamest perepolnenie ne opredelqem
 	LXI	D,FCB
-	MVI	C,10H
+	MVI	C,10H	;  Close File
 	CALL	5
 	;CALL	MAXRAM
 	;MVI	M,1AH
 	RET
+ELSE
+O_OPEN	equ	0
+O_DELETE equ	100
+FS_EXEC	equ	0
+FS_FIND	equ	1
+FS_OPEN	equ	2
+FS_SEEK	equ	3
+FS_READ	equ	4
+FS_WRITE equ	5
 
+	PUSH	H
+	lhld	fs_cmdLine
+	MVI	D,O_OPEN
+	mvi	a, FS_OPEN
+	call	fs
+	ora	a
+	POP	H
+	jnz	ERR1
+
+	push	h
+	lxi	h,0
+	mvi	b,100
+	mvi	a, FS_SEEK
+	call	fs
+	mov	a,e
+	ora	d
+	xchg
+	pop	h
+	jnz	FileTooBig
+	xchg
+	mvi	a, FS_READ
+	call	fs
+	ora	a
+	jnz	ErrFileRead
+	ret
+
+LoadFont:
+IFDEF	SHELL
+	lxi	h, fntName
+	MVI	D,O_OPEN
+	mvi	a, FS_OPEN
+	call	fs
+	ora	a
+	rnz
+
+	lxi	b,T_T80_VRAM_PATT_ADDRESS;2000h
+	call	T_SetAddrWrite
+	mvi	c, 4096 / 512;
+lf00:
+	lhld	RamTop
+	xchg
+	lxi	h, 512
+	push	h
+	push	d
+	push	b
+	mvi	a,FS_READ
+	call	fs
+	pop	b
+	pop	h
+	pop	d
+	ora	a
+	rnz
+	call	T_WriteBytes
+	dcr	c
+	jnz	lf00
+ENDIF
+	ret
+
+
+; BC - address to write
+T_SetAddrWrite:
+	MOV	A,B
+	ORI	40h
+	MOV	B,A
+; BC - address to read
+T_SetAddrRead:
+	DI
+	MOV	A,C
+	OUT	VDP+1
+	MOV	A,B
+	OUT	VDP+1
+	EI
+	RET
+
+fntName:	DB	"BOOT/F8X16R.BIN",0
+
+ENDIF
 
 WRFIL::
 	CALL	MARK
@@ -320,7 +435,9 @@ WRBL::	CALL	MARK
 	JMP	DISADR
 
 
-WRSEG:	PUSH	H
+WRSEG:
+IFNDEF	SHELL
+	PUSH	H
 	PUSH	D
 	LXI	D,FCB
 	MVI	C,13H	; ERASE FILE
@@ -329,7 +446,7 @@ WRSEG:	PUSH	H
 	MVI	C,16H	; OPEN FILE
 	CALL	5
 	LXI	D,BUFF
-	MVI	C,1AH
+	MVI	C,1AH	; SET DMA
 	CALL	5
 	POP	D
 	POP	H
@@ -357,7 +474,7 @@ TOBUF:	MOV	M,A
 	RNZ
 PUSHS:	PUSH	D
 	LXI	D,FCB
-	MVI	C,15H
+	MVI	C,15H	; Write Sequential
 	CALL	5
 	POP	D
 	MVI	B,80H
@@ -372,8 +489,74 @@ WRB11:	MVI	A,1AH
 	CPI	80H
 	CNZ	PUSHS
 	LXI	D,FCB
-	MVI	C,10H
+	MVI	C,10H	; Close File
 	CALL	5
+ELSE
+O_DELETE	equ	100
+O_CREATE	equ	1
+
+
+	PUSH	D
+	PUSH	H
+	MVI	D, O_DELETE
+	MVI	a, FS_OPEN
+	CALL	fs
+	pop	h
+	push	h
+	MVI	D, O_CREATE
+	MVI	a, FS_OPEN
+	CALL	fs
+	POP	H
+	POP	D
+	PUSH	H
+	LXI	H,BUFF
+	MVI	B,80H
+	INX	D
+WRB00:	XTHL
+	CALL	CDEHL
+	JZ	WRB10
+	MOV	A,M
+	INX	H
+	XTHL
+	CPI	0FFH
+	JZ	WRB11
+	CPI	0DH
+	JNZ	$+8
+	CALL	TOBUF
+	MVI	A,0AH
+	CALL	TOBUF
+	JMP	WRB00
+TOBUF:	MOV	M,A
+	INX	H
+	DCR	B
+	RNZ
+PUSHS:	PUSH	D
+	mvi	a, 128
+	sbb	b
+	mov	l,a
+	mvi	h,0
+	LXI	D, BUFF
+	PUSH	D
+	MVI	a, 5
+	CALL	fs
+	POP	H
+	POP	D
+	MVI	B,80H
+	;LXI	H,BUFF
+	RET
+
+WRB10:	XTHL
+WRB11:	MVI	A,1AH
+	CALL	TOBUF
+	POP	H
+	MOV	A,B
+	CPI	80H
+	CNZ	PUSHS
+	;LXI	D,FCB
+	;MVI	C,10H	; Close File
+	;CALL	5
+
+ENDIF
 	RET
 
 

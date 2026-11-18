@@ -1,4 +1,6 @@
 	;.PHASE 100h
+	DSEG
+	org 1e00h
 	CSEG
 	;ORG 104h
 noend	equ	1
