@@ -496,68 +496,83 @@ O_DELETE	equ	100
 O_CREATE	equ	1
 
 
-	PUSH	D
-	PUSH	H
-	MVI	D, O_DELETE
-	MVI	a, FS_OPEN
-	CALL	fs
-	pop	h
+	push	d
 	push	h
-	MVI	D, O_CREATE
-	MVI	a, FS_OPEN
-	CALL	fs
-	POP	H
-	POP	D
-	PUSH	H
-	LXI	H,BUFF
-	MVI	B,80H
-	INX	D
-WRB00:	XTHL
-	CALL	CDEHL
-	JZ	WRB10
-	MOV	A,M
-	INX	H
-	XTHL
-	CPI	0FFH
-	JZ	WRB11
-	CPI	0DH
-	JNZ	$+8
-	CALL	TOBUF
-	MVI	A,0AH
-	CALL	TOBUF
-	JMP	WRB00
-TOBUF:	MOV	M,A
-	INX	H
-	DCR	B
-	RNZ
-PUSHS:	PUSH	D
-	mvi	a, 128
-	sbb	b
-	mov	l,a
-	mvi	h,0
-	LXI	D, BUFF
-	PUSH	D
-	MVI	a, 5
-	CALL	fs
-	POP	H
-	POP	D
-	MVI	B,80H
-	;LXI	H,BUFF
+	lxi	h, FILNAM
+	push	h
+	mvi	d, O_DELETE
+	mvi	a, FS_OPEN
+	call	fs
+	pop	h
+	mvi	d, O_CREATE
+	mvi	a, FS_OPEN
+	call	fs
+	pop	h
+	pop	d
+	call	WrInitBuf
+	inx	d
+WRB00:
+	call	CDEHL
+	jz	WRB10
+	mov	a,m
+	inx	h
+	cpi	0ffh
+	jz	WRB11
+	cpi	0dh
+	jnz	$+8
+	call	TOBUF
+	mvi	a,0ah
+	call	TOBUF
+	jmp	WRB00
+TOBUF:	stax	b
+	inx	b
+	lda	WrCount
+	dcr	a
+	sta	WrCount
+	rnz
+	lda	WrCount+1
+	ora	a
+	jz	PUSHS
+	dcr	a
+	sta	WrCount+1
 	RET
+PUSHS:	push	h
+	push	d
+	lhld	WrCount
+	lxi	d,512
+	xchg
+	call	?subhlde
+	lxi	d, BUFF
+	push	d
+	mvi	a, 5
+	call	fs
+	pop	d
+	pop	h
+WrInitBuf:
+	lxi	b,BUFF
+	xra	a
+	sta	WrCount
+	inr	a
+	sta	WrCount+1 ; 512
+	ret
+WrCount:
+	DS	2
+WRB10:
+WRB11:	mvi	a,1ah
+	call	TOBUF
+	lda	WrCount
+	ora	a
+	jnz	PUSHS
+	lda	WrCount+1
+	ora	a
+	jz	PUSHS
 
-WRB10:	XTHL
-WRB11:	MVI	A,1AH
-	CALL	TOBUF
-	POP	H
-	MOV	A,B
-	CPI	80H
-	CNZ	PUSHS
-	;LXI	D,FCB
-	;MVI	C,10H	; Close File
-	;CALL	5
+	;lxi	d,fcb
+	;mvi	c,10h	; close file
+	;call	5
 
 ENDIF
-	RET
+	ret
 
 
 DISHW:	CALL	CLRSTR
@@ -567,9 +582,11 @@ DISHW:	CALL	CLRSTR
 	CALL	INFPR
 	DW	10
 	DC	'FILE:'
-INPNAM:	LXI	H,FILNAM
-	LXI	B,NAMMES
-	CALL	INPSTR
+INPNAM:
+	call	COPY_FILENAME
+	;LXI	H,FILNAM
+	;LXI	B,NAMMES
+	;CALL	Get_key;INPSTR
 	JMP	RD20
 ENDIF
 

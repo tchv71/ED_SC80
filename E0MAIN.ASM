@@ -1895,6 +1895,43 @@ Input_And_Show:
 	sta	CURX
 	jmp	@put_str
 
+COPY_FILENAME:
+	LHLD	fs_cmdLine
+	mov	c,l
+	mov	b,h
+	LXI	D,FILNAM
+	mvi	a,1
+	STA	NAMMES
+	MVI	A,LogicHeight+2
+	STA	CURY
+	LHLD	INFADR
+	PUSH	D
+	LXI	D,kraj-1
+	DAD	D
+	POP	D
+	SetScrAddr
+
+CF00:
+	ldax	b
+	ora	a
+	jz	CF01
+
+	WriteNextSym
+	stax	d
+	inx	d
+	inx	b
+	lda	NAMMES
+	inr	a
+	sta	NAMMES
+	jmp	CF00
+CF01:
+	LXI	B,NAMMES
+	ldax	b
+	adi	kraj-1
+	sta	CURX
+	jmp	move_curs
+	
+
 INPSTR:
 	MVI	M,0
 	xchg
@@ -2568,7 +2605,7 @@ INBLK:	PUSH	D
 	CALL	GLBSIZ
 	XCHG
 	POP	H
-	CALL	CSUB
+	CALL	?subhlde
 	XCHG
 	RET
 
@@ -2589,7 +2626,7 @@ JBLCD:	LHLD	BLBEG
 	INX	H
 	POP	D
 	XCHG
-	CALL	CSUB
+	CALL	?subhlde
 	XCHG
 	RET
 
@@ -2598,7 +2635,7 @@ INBLD:	LHLD	DSTADR
 	XCHG
 	LHLD	BLEND
 	XCHG
-	CALL	CSUB
+	CALL	?subhlde
 	XCHG
 	RET
 
@@ -2686,7 +2723,7 @@ JBLDN:	LHLD	SCRAD0
 	POP	H
 	SHLD	BLEND
 	DCX	H
-	CALL	CSUB
+	CALL	?subhlde
 	SHLD	BLBEG
 	JMP	DISADR
 
@@ -2740,7 +2777,7 @@ JBLD:	CALL	BLKSIZ
 	DCX	H
 	XCHG
 	LHLD	DSTADR
-	CALL	CSUB
+	CALL	?subhlde
 	DCX	H
 	POP	D
 	CALL	?DVNHD
@@ -2748,7 +2785,7 @@ JBLD:	CALL	BLKSIZ
 	MOV	A,D
 	ORA	E
 	PUSH	PSW	; ? End of relocation
-	CALL	CSUB
+	CALL	?subhlde
 	MOV	B,H
 	MOV	C,L
 	LHLD	BLEND
@@ -2771,12 +2808,12 @@ BLKSIZ:	LHLD	BLBEG
 	XCHG
 	LHLD	BLEND
 	DCX	H
-	JMP	CSUB
+	JMP	?subhlde
 
 GLBSIZ:	LHLD	DSTADR
 	XCHG
 	LHLD	BLBEG
-	JMP	CSUB
+	JMP	?subhlde
 
 GREXU:	MOV	A,E
 	CMP	C
@@ -3007,7 +3044,7 @@ COMPUTE:CALL	GETVL1
 	CPI	'+'
 	JZ	CADD
 	CPI	'-'
-	JZ	CSUB
+	JZ	?subhlde
 	CPI	'*'
 	JZ	?MULHD
 	CPI	'/'
@@ -3019,7 +3056,7 @@ CADD:	DAD	D
 
 ERR:	JMP	IN4
 
-CSUB:	XCHG
+?subhlde:	XCHG
 	CALL	?NEGHL
 	DAD	D
 	RET
@@ -3358,8 +3395,9 @@ TABSRH:	DS	2
 ;?END:	DS	1
 SYM:	DS	1
 STRSR:	DS	33
-STRREP:	DS	15
-FILNAM:	DS	14
+STRREP:
+FILNAM:	
+	DS	29
 STRRED:	DS	128
 	CSEG
 
