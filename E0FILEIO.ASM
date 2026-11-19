@@ -352,10 +352,16 @@ FS_WRITE equ	5
 	pop	h
 	jnz	FileTooBig
 	xchg
+	push	h
+	push	d
 	mvi	a, FS_READ
 	call	fs
+	pop	d
+	pop	h
 	ora	a
 	jnz	ErrFileRead
+	dad	d
+	mvi	m,1ah
 	ret
 
 LoadFont:
@@ -434,7 +440,20 @@ WRBL::	CALL	MARK
 	POP	H
 	JMP	DISADR
 
-
+SAVE:
+	lhld	fs_cmdLine
+	lxi	d, FILNAM
+sav00:
+	mov	a, m
+	inx	h
+	stax	d
+	inx	d
+	ora	a
+	jnz	sav00
+	LHLD	nivgr
+	XCHG
+	LHLD	werhgr
+	XCHG
 WRSEG:
 IFNDEF	SHELL
 	PUSH	H
@@ -542,14 +561,19 @@ PUSHS:	push	h
 	lxi	d,512
 	xchg
 	call	?subhlde
-	lxi	d, BUFF
-	push	d
+	xchg
+	lhld	RamTop
+	xchg
 	mvi	a, 5
 	call	fs
 	pop	d
 	pop	h
 WrInitBuf:
-	lxi	b,BUFF
+	lda	RamTop
+	mov	c,a
+	lda	RamTop+1
+	mov	b,a
+
 	xra	a
 	sta	WrCount
 	inr	a

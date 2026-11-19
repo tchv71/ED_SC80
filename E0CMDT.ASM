@@ -73,6 +73,7 @@ ENDIF
 	CMD	EXIT,	@Str+'E'*256
 	CMD	RDFIL,	@Str+('R'-Cntrl)*256
 	CMD	WRFIL,	@Str+('W'-Cntrl)*256
+	CMD	SAVE,	@Str+'W'*256
 	CMD	PAGEUP,	Cntrl+@Up,	PAGEDN,	Cntrl+@Down
 
 	CMD	DELLIN,	'D', 	CONT_SRREP, 	'L' ; Continue SEARCH/REPLACE
@@ -154,4 +155,4 @@ CmdFound:
 
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-
+
