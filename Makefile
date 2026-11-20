@@ -82,7 +82,7 @@ bin/E_CPM.rkl: _palmiraCPM EDSC80PC.BIN
 	copy /b EDSC80PC.BIN bin\e3.com
 
 bin/EDM.rk: _palmiraShell EDSC80PC.BIN
-	../makerk/Release/makerk.exe 100 EDSC80PC.BIN $@ 1Bff
+	../makerk/Release/makerk.exe 100 EDSC80PC.BIN $@ 1Cff
 	../m80noi/x64/Release/m80noi.exe EDSC80.prn
 #	copy /b EDSC80PC.BIN bin\edm.com
 

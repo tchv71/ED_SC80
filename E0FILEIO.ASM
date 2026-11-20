@@ -441,6 +441,7 @@ WRBL::	CALL	MARK
 	JMP	DISADR
 
 SAVE:
+	call	clearDirty
 	lhld	fs_cmdLine
 	lxi	d, FILNAM
 sav00:

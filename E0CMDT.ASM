@@ -28,6 +28,7 @@ Shift		equ	80h
 Cntrl		equ	40h
 ENDIF
 
+DIRTY	EQU	80H
 
 CMD	MACRO	Adr1,Key1,Adr2,Key2
 ;extrn	Adr1
@@ -50,25 +51,25 @@ CMDTBL::
 	CMD	REPMOD,	2
 	DW	0
 
-	CMD	INSCTRL,0
+	CMD	INSCTRL,0+DIRTY
 IFDEF MSX
-	CMD	LDEL,	8,		RDEL,	127
+	CMD	LDEL,	8+DIRTY,	RDEL,	127+DIRTY
 ELSE
-	CMD	LDEL,	3Fh,		RDEL,	3
+	CMD	LDEL,	3Fh+DIRTY,	RDEL,	3
 ENDIF
-	CMD	TAB,	9,		BSC,	12
-	CMD	CR,	13,		REST,	27
-	CMD	DELLT,	Cntrl+1,	DELRT,	Cntrl+3
+	CMD	TAB,	9+DIRTY,	BSC,	12+DIRTY
+	CMD	CR,	13+DIRTY,	REST,	27
+	CMD	DELLT,	Cntrl+1+DIRTY,	DELRT,	Cntrl+3+DIRTY
 	CMD	LEND,	Cntrl+@Left,	REND,	Cntrl+@Right
-	CMD	INSSPC,	Cntrl+2,	BRKSTR,	Cntrl+13
+	CMD	INSSPC,	Cntrl+2+DIRTY,	BRKSTR,	Cntrl+13+DIRTY
 	DW	0
 
-	CMD	JoinStr,'J'
+	CMD	JoinStr,'J'+DIRTY
 	DW	0
 
 	CMD	CALC,	@Str+'C'*256;,	ASSM	@Str+'A'*256
 	CMD	SEARCH,	@Str+'S'*256,	REPLACE,@Str+'R'*256
-	CMD	NEW,	@Str+'N'*256;,	VERIFY,	@Str+'V'*256
+	CMD	NEW,	@Str+'N'*256+DIRTY;,	VERIFY,	@Str+'V'*256
 	CMD	BEGBUF,	@Str+@Up*256,	ENDBUF,	@Str+@Down*256
 	CMD	EXIT,	@Str+'E'*256
 	CMD	RDFIL,	@Str+('R'-Cntrl)*256
@@ -76,7 +77,7 @@ ENDIF
 	CMD	SAVE,	@Str+'W'*256
 	CMD	PAGEUP,	Cntrl+@Up,	PAGEDN,	Cntrl+@Down
 
-	CMD	DELLIN,	'D', 	CONT_SRREP, 	'L' ; Continue SEARCH/REPLACE
+	CMD	DELLIN,	'D'+DIRTY, 	CONT_SRREP, 	'L'+DIRTY ; Continue SEARCH/REPLACE
 	CMD	SWPWIN,	'W', WINUP,'U'
 	CMD	WINDN,	'K'
 
@@ -85,10 +86,10 @@ ENDIF
 	CMD	MRBEG,	'Q'+@Up*256,	MREND,	'Q'+@Down*256
 	CMD	RDBL,	'Q'+('R'-Cntrl)*256
 	DW	0
-	CMD	DELBL,	'Q'+('D'-Cntrl)*256
+	CMD	DELBL,	'Q'+('D'-Cntrl)*256+DIRTY
 	CMD	WRBL,	'Q'+('W'-Cntrl)*256
-	CMD	COPYBL,	'Q'+('C'-Cntrl)*256
-	CMD	JMPBL,	'Q'+('J'-Cntrl)*256
+	CMD	COPYBL,	'Q'+('C'-Cntrl)*256+DIRTY
+	CMD	JMPBL,	'Q'+('J'-Cntrl)*256+DIRTY
 	DW	0
 
 	cseg
@@ -101,8 +102,9 @@ FNDCMD:	INX	H
 	dcr	m
 	INX	H
 	rz	; Return if command not found
-	mov	a,c
-	CMP	M
+	mov	a,m
+	ani	7fh
+	CMP	c
 	JZ	FirstSym	; First symbol is ok
 	INX	H
 ContCmdSearch:
@@ -144,6 +146,11 @@ FirstSym:
 CmdFound:
 	pop	d	; Drop	return address
 	dcx	h
+	mov	a, m
+	ani	80h
+	jz	cmdf00
+	call	setDirty
+cmdf00:
 	dcx	h
 	mov	d,m
 	dcx	h
@@ -151,6 +158,36 @@ CmdFound:
 	XCHG
 	PCHL
 
+setDirty:
+	push	h
+	push	psw
+	CALL	GETINFADR
+	SetScrAddr
+	mvi	a,'*'
+	sta	DirtyFlag
+	WriteNextSym
+	pop	psw
+	pop	h
+	ret
+
+clearDirty:
+	push	h
+	push	psw
+	CALL	GETINFADR
+	SetScrAddr
+	xra	a
+	sta	DirtyFlag
+	WriteNextSym
+	pop	psw
+	pop	h
+	ret
+
+isDirty:
+	lda	DirtyFlag
+	ora	a
+	ret
+
+DirtyFlag:	db	0
 	END
 
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
